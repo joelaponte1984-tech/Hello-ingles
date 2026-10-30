@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101b32">
+<title>Hello · Inglés paso a paso</title>
+<style>
+:root{
+ color-scheme:light;
+ --bg:#f3f5fa;--card:#fff;--ink:#17243d;--muted:#606d83;
+ --line:#dce2ed;--brand:#405bea;--soft:#eef0ff;--ok:#176946;
+ --good:#e5f5ec;--bad:#ae303d;--badbg:#fff0f1;--gold:#ffd373;
+ --shadow:0 12px 32px #17243d08;
+ font:17px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+@media(prefers-color-scheme:dark){
+ :root{
+  color-scheme:dark;--bg:#0c1424;--card:#142139;--ink:#eef3fc;
+  --muted:#acb9cd;--line:#2a3a55;--brand:#a0b0ff;--soft:#243457;
+  --ok:#83dfb0;--good:#153c30;--bad:#ffa1ad;--badbg:#422532;
+  --shadow:none
+ }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink)}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:disabled{opacity:.5;cursor:default}
+button,input,textarea,select{color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible,
+select:focus-visible,a:focus-visible{outline:3px solid #e5a82c;outline-offset:3px}
+button{min-height:46px}
+[hidden]{display:none!important}
+header,main{max-width:800px;margin:auto;padding:18px}
+header{padding-top:calc(20px + env(safe-area-inset-top))}
+main{padding-top:0;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+.logo{font-weight:900;font-size:1.65rem;letter-spacing:-1px}
+.logo span{color:var(--brand)}
+.top,.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top{justify-content:space-between}
+h1,h2,h3,p{margin:0 0 12px}
+h1{font-size:clamp(2rem,7vw,3rem);line-height:1.08;letter-spacing:-1.3px}
+h2{font-size:1.55rem;line-height:1.2}
+h3{font-size:1.1rem}
+small,.small{font-size:.85rem}
+.muted{color:var(--muted)}
+.card{
+ background:var(--card);border:1px solid var(--line);
+ border-radius:22px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)
+}
+.hero{background:#172953;color:#fff;border:0;padding:26px}
+.hero .muted{color:#cbd7ef}
+.tag{
+ display:inline-block;border-radius:99px;background:var(--soft);
+ color:var(--brand);padding:5px 10px;font-size:.78rem;font-weight:800
+}
+.hero .tag{background:#ffffff1c;color:#e5ebff}
+.btn,.ghost,.choice,.token{
+ border:1px solid var(--line);border-radius:13px;
+ padding:11px 15px;background:var(--card);color:var(--ink);font-weight:700
+}
+.btn{background:var(--brand);border-color:transparent;color:#fff}
+@media(prefers-color-scheme:dark){.btn{color:#101a32}}
+.gold{background:var(--gold);color:#302200;border-color:transparent}
+.ghost{background:transparent}
+.wide{width:100%}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.stat{text-align:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 4px}
+.stat strong{display:block;font-size:1.4rem}
+.unit{text-align:left;display:block;width:100%;height:100%;padding:18px}
+.unit .emoji{font-size:1.7rem}
+.unit b{display:block;margin:7px 0}
+.unit small{display:block;color:var(--muted)}
+.done{border-color:var(--ok);background:var(--good)}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:14px 0}
+.progress i{display:block;height:100%;background:var(--brand);width:0;transition:width .2s}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.tools button{font-size:.9rem}
+.phrase{font-size:clamp(1.5rem,6vw,2rem);font-weight:800;line-height:1.25;margin:16px 0}
+.notice{padding:13px 15px;border-left:4px solid var(--gold);background:var(--soft);border-radius:10px;margin:12px 0}
+.feedback{padding:14px;border-radius:12px;margin:14px 0}
+.feedback.good{background:var(--good);color:var(--ok)}
+.feedback.bad{background:var(--badbg);color:var(--bad)}
+input,textarea,select{
+ width:100%;background:var(--bg);border:1px solid var(--line);
+ border-radius:12px;padding:12px;min-height:48px
+}
+textarea{resize:vertical}
+label{display:block;margin:12px 0 5px;font-weight:700}
+.check{display:flex;gap:10px;align-items:center;font-weight:400}
+.check input{width:20px;min-height:20px}
+.choice{display:block;width:100%;text-align:left;margin:10px 0}
+.choice.right{background:var(--good);border-color:var(--ok)}
+.choice.wrong{background:var(--badbg);border-color:var(--bad)}
+.token{margin:4px;padding:8px 12px}
+.answer{min-height:70px;border:2px dashed var(--line);border-radius:14px;padding:8px;margin:14px 0}
+.bubble{max-width:92%;padding:15px;border-radius:18px;background:var(--soft);margin:14px 0}
+.bubble.you{margin-left:auto;background:var(--good)}
+.bubble p:last-child{margin-bottom:0}
+details summary{cursor:pointer;min-height:44px;padding:8px 0;font-weight:700}
+details p{margin-top:8px}
+nav{
+ position:fixed;bottom:0;left:0;right:0;z-index:30;
+ background:var(--card);border-top:1px solid var(--line);
+ padding-bottom:env(safe-area-inset-bottom)
+}
+nav .navin{display:grid;grid-template-columns:repeat(4,1fr);max-width:800px;margin:auto}
+nav button{
+ background:none;border:0;border-radius:0;color:var(--muted);
+ font-size:.75rem;font-weight:700;padding:10px 2px
+}
+nav button span{display:block;font-size:1.35rem}
+nav button[aria-current]{color:var(--brand);box-shadow:inset 0 3px var(--brand)}
+#toast{
+ position:fixed;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+ z-index:100;background:var(--ink);color:var(--bg);padding:12px 18px;
+ border-radius:14px;width:max-content;max-width:92%;box-shadow:var(--shadow)
+}
+audio{width:100%;margin-top:12px}
+.sep{height:1px;background:var(--line);margin:18px 0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:360px){.grid{grid-template-columns:1fr}.card{padding:16px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header>
+ <div class="top">
+  <div class="logo">hello<span>·</span></div>
+  <button class="ghost" id="settingsBtn" aria-label="Abrir ajustes">⚙️ Ajustes</button>
+ </div>
+</header>
+<main id="app"></main>
+<div id="toast" role="status" hidden></div>
+<nav aria-label="Secciones principales">
+ <div class="navin">
+  <button data-tab="home" aria-current="page"><span aria-hidden="true">🏡</span>Mi camino</button>
+  <button data-tab="units"><span aria-hidden="true">📚</span>Lecciones</button>
+  <button data-tab="talk"><span aria-hidden="true">💬</span>Conversar</button>
+  <button data-tab="voice"><span aria-hidden="true">🎙️</span>Mi voz</button>
+ </div>
+</nav>
+<script>
+"use strict";
+
+/* CONTENIDO: curso inicial, no certificación de nivel. */
+const U=[
+{
+ id:"b1",icon:"👋",title:"Tu primer saludo",goal:"Saludar y preguntar cómo está alguien.",
+ tip:"Hello es un saludo general. Good morning se usa por la mañana. Good night suele ser una despedida, no un saludo.",
+ p:[
+ ["Hello.","Hola."],
+ ["Good morning.","Buenos días."],
+ ["How are you?","¿Cómo estás?"],
+ ["I'm fine, thank you.","Estoy bien, gracias.",["I am fine, thank you.","I'm well, thank you."]]
+ ],
+ d:[
+ ["Hello!","¡Hola!","Hello.","Hola.",["Hi.","Hi!"]],
+ ["How are you?","¿Cómo estás?","I'm fine, thank you.","Estoy bien, gracias.",["I'm good, thanks.","I'm well, thank you.","I am fine, thank you."]],
+ ["See you later!","¡Hasta luego!","Goodbye!","¡Adiós!",["Bye.","See you later.","See you."]]
+ ]
+},
+{
+ id:"b2",icon:"🙋",title:"Presentarte",goal:"Decir tu nombre y de dónde eres.",
+ tip:"I'm es la contracción de I am. Para practicar respuestas personales, sustituye después Ana y Peru por tus datos.",
+ p:[
+ ["My name is Ana.","Me llamo Ana.",["I'm Ana.","I am Ana."]],
+ ["Nice to meet you.","Encantado de conocerte."],
+ ["I'm from Peru.","Soy de Perú.",["I am from Peru."]],
+ ["I live in Madrid.","Vivo en Madrid."]
+ ],
+ d:[
+ ["What's your name?","¿Cómo te llamas?","My name is Ana.","Me llamo Ana.",["I'm Ana.","I am Ana."]],
+ ["Nice to meet you.","Encantado de conocerte.","Nice to meet you too.","Encantado también.",["Nice to meet you, too."]],
+ ["Where are you from?","¿De dónde eres?","I'm from Peru.","Soy de Perú.",["I am from Peru."]]
+ ]
+},
+{
+ id:"b3",icon:"🛟",title:"Cuando no entiendes",goal:"Pedir ayuda y una repetición.",
+ tip:"No necesitas entender todo para comunicarte. Estas frases te ayudan a mantener una conversación.",
+ p:[
+ ["Excuse me.","Disculpe."],
+ ["I don't understand.","No entiendo.",["I do not understand."]],
+ ["Can you repeat, please?","¿Puedes repetir, por favor?",["Could you repeat, please?","Can you say that again, please?"]],
+ ["Slowly, please.","Despacio, por favor.",["More slowly, please."]]
+ ],
+ d:[
+ ["Hello. Can I help you?","Hola. ¿Puedo ayudarte?","I don't understand.","No entiendo.",["I do not understand.","Sorry, I don't understand."]],
+ ["No problem. What do you need?","No pasa nada. ¿Qué necesitas?","Can you repeat, please?","¿Puedes repetir, por favor?",["Could you repeat, please?","Can you say that again, please?"]],
+ ["Yes, of course.","Sí, por supuesto.","Slowly, please.","Despacio, por favor.",["More slowly, please."]]
+ ]
+},
+{
+ id:"b4",icon:"🔢",title:"Precios y números",goal:"Preguntar un precio y comprender cantidades.",
+ tip:"En inglés se dice five euros. Practica también los números del uno al diez en la sección Mi voz.",
+ p:[
+ ["How much is it?","¿Cuánto cuesta?",["How much does it cost?"]],
+ ["It's five euros.","Son cinco euros.",["It is five euros.","Five euros."]],
+ ["Two, please.","Dos, por favor."],
+ ["Thank you.","Gracias.",["Thanks."]]
+ ],
+ d:[
+ ["Hello. What would you like?","Hola. ¿Qué deseas?","Two, please.","Dos, por favor."],
+ ["Here you are.","Aquí tienes.","How much is it?","¿Cuánto cuesta?",["How much does it cost?"]],
+ ["It's five euros.","Son cinco euros.","Thank you.","Gracias.",["Thanks."]]
+ ]
+},
+{
+ id:"b6",icon:"🧱",title:"Ser y estar",goal:"Hablar de cómo estás y dónde estás.",
+ tip:"To be sirve para ser y estar. I'm tired significa estoy cansado. I'm a doctor significa soy médico.",
+ p:[
+ ["I'm tired.","Estoy cansado.",["I am tired."]],
+ ["I'm ready.","Estoy listo.",["I am ready."]],
+ ["She is a doctor.","Ella es médica.",["She's a doctor."]],
+ ["We are at home.","Estamos en casa.",["We're at home."]]
+ ],
+ d:[
+ ["How are you?","¿Cómo estás?","I'm tired.","Estoy cansado.",["I am tired."]],
+ ["Where are you?","¿Dónde estáis?","We are at home.","Estamos en casa.",["We're at home."]],
+ ["Are you ready?","¿Estás listo?","I'm ready.","Estoy listo.",["I am ready.","Yes, I'm ready."]]
+ ]
+},
+{
+ id:"b7",icon:"🙏",title:"Pedir con educación",goal:"Pedir algo y solicitar ayuda.",
+ tip:"I'd like significa quisiera. Can I have…? es una forma habitual de pedir algo.",
+ p:[
+ ["I'd like some water, please.","Quisiera agua, por favor.",["I would like some water, please."]],
+ ["Can you help me?","¿Puedes ayudarme?",["Could you help me?"]],
+ ["Can I pay by card?","¿Puedo pagar con tarjeta?",["Can I pay with a card?"]],
+ ["You're welcome.","De nada.",["You are welcome."]]
+ ],
+ d:[
+ ["What would you like?","¿Qué deseas?","I'd like some water, please.","Quisiera agua, por favor.",["I would like some water, please."]],
+ ["Of course. Here you are.","Por supuesto. Aquí tienes.","Can I pay by card?","¿Puedo pagar con tarjeta?",["Can I pay with a card?"]],
+ ["Yes. Thank you!","Sí. ¡Gracias!","You're welcome.","De nada.",["You are welcome."]]
+ ]
+},
+{
+ id:"cafe",icon:"☕",title:"En la cafetería",goal:"Pedir un café para llevar.",
+ tip:"To go se usa mucho en Estados Unidos. Takeaway es habitual en Reino Unido.",
+ p:[
+ ["A coffee, please.","Un café, por favor.",["One coffee, please."]],
+ ["With milk, please.","Con leche, por favor."],
+ ["To go, please.","Para llevar, por favor.",["Takeaway, please."]],
+ ["That's all, thank you.","Eso es todo, gracias.",["That is all, thank you."]]
+ ],
+ d:[
+ ["Hi! What can I get you?","¡Hola! ¿Qué te pongo?","A coffee, please.","Un café, por favor.",["One coffee, please."]],
+ ["Black or with milk?","¿Solo o con leche?","With milk, please.","Con leche, por favor."],
+ ["For here or to go?","¿Para tomar aquí o para llevar?","To go, please.","Para llevar, por favor.",["Takeaway, please."]],
+ ["Anything else?","¿Algo más?","That's all, thank you.","Eso es todo, gracias.",["That is all, thank you."]]
+ ]
+},
+{
+ id:"super",icon:"🛒",title:"En el supermercado",goal:"Localizar productos y pagar.",
+ tip:"Where is…? pregunta dónde está una cosa. Where are…? se usa para varias.",
+ p:[
+ ["Where is the milk?","¿Dónde está la leche?",["Where's the milk?"]],
+ ["I need a bag, please.","Necesito una bolsa, por favor."],
+ ["Can I pay in cash?","¿Puedo pagar en efectivo?"],
+ ["No, thank you.","No, gracias.",["No, thanks."]]
+ ],
+ d:[
+ ["Can I help you?","¿Puedo ayudarte?","Where is the milk?","¿Dónde está la leche?",["Where's the milk?"]],
+ ["In aisle two. Do you have a loyalty card?","En el pasillo dos. ¿Tienes tarjeta de cliente?","No, thank you.","No, gracias.",["No.","No, I don't."]],
+ ["Do you need anything else?","¿Necesitas algo más?","I need a bag, please.","Necesito una bolsa, por favor."],
+ ["Of course.","Por supuesto.","Can I pay in cash?","¿Puedo pagar en efectivo?"]
+ ]
+},
+{
+ id:"direcciones",icon:"🗺️",title:"Encontrar el camino",goal:"Preguntar por el baño y la estación.",
+ tip:"Left es izquierda; right es derecha. Straight ahead significa todo recto.",
+ p:[
+ ["Where is the bathroom?","¿Dónde está el baño?",["Where's the bathroom?","Where is the toilet?"]],
+ ["Is it far?","¿Está lejos?"],
+ ["Turn left.","Gira a la izquierda."],
+ ["Go straight ahead.","Sigue recto.",["Go straight."]]
+ ],
+ d:[
+ ["Hello. Can I help you?","Hola. ¿Puedo ayudarte?","Where is the bathroom?","¿Dónde está el baño?",["Where's the bathroom?","Where is the toilet?"]],
+ ["It's next to the station.","Está junto a la estación.","Is it far?","¿Está lejos?"],
+ ["No, two minutes. Go straight ahead.","No, a dos minutos. Sigue recto.","Thank you.","Gracias.",["Thanks.","Thank you very much."]]
+ ]
+},
+{
+ id:"restaurante",icon:"🍽️",title:"En el restaurante",goal:"Pedir mesa, comida y la cuenta.",
+ tip:"The bill es habitual en Reino Unido; the check, en Estados Unidos. Ambas formas son válidas.",
+ p:[
+ ["A table for two, please.","Una mesa para dos, por favor."],
+ ["I'd like the chicken, please.","Quisiera el pollo, por favor.",["I would like the chicken, please."]],
+ ["Water, please.","Agua, por favor.",["Some water, please."]],
+ ["Can I have the bill, please?","¿Me traes la cuenta, por favor?",["Can I have the check, please?","Could I have the bill, please?"]]
+ ],
+ d:[
+ ["Good evening. How can I help?","Buenas tardes. ¿En qué puedo ayudarte?","A table for two, please.","Una mesa para dos, por favor."],
+ ["Of course. What would you like to eat?","Por supuesto. ¿Qué te gustaría comer?","I'd like the chicken, please.","Quisiera el pollo, por favor.",["I would like the chicken, please."]],
+ ["And to drink?","¿Y de beber?","Water, please.","Agua, por favor.",["Some water, please."]],
+ ["Was everything OK?","¿Estaba todo bien?","Can I have the bill, please?","¿Me traes la cuenta, por favor?",["Can I have the check, please?","Could I have the bill, please?"]]
+ ]
+},
+{
+ id:"hotel",icon:"🏨",title:"Llegar al hotel",goal:"Registrarte y preguntar por el desayuno.",
+ tip:"I have significa tengo. Una reservation es una reserva.",
+ p:[
+ ["I have a reservation.","Tengo una reserva.",["I've got a reservation."]],
+ ["Here is my passport.","Aquí está mi pasaporte.",["Here's my passport."]],
+ ["What time is breakfast?","¿A qué hora es el desayuno?"],
+ ["Thank you for your help.","Gracias por tu ayuda."]
+ ],
+ d:[
+ ["Welcome! Do you have a reservation?","¡Bienvenido! ¿Tienes una reserva?","I have a reservation.","Tengo una reserva.",["Yes, I have a reservation.","I've got a reservation."]],
+ ["Can I see your passport, please?","¿Puedo ver tu pasaporte, por favor?","Here is my passport.","Aquí está mi pasaporte.",["Here's my passport.","Here you are."]],
+ ["Thank you. Your room is ready.","Gracias. Tu habitación está lista.","What time is breakfast?","¿A qué hora es el desayuno?"],
+ ["From seven to ten.","De siete a diez.","Thank you for your help.","Gracias por tu ayuda.",["Thank you.","Thanks."]]
+ ]
+},
+{
+ id:"oficina",icon:"💼",title:"Tu primer día de trabajo",goal:"Presentarte y pedir apoyo.",
+ tip:"I'm learning English es estoy aprendiendo inglés. Puedes usarla para pedir paciencia.",
+ p:[
+ ["I'm new here.","Soy nuevo aquí.",["I am new here."]],
+ ["I'm learning English.","Estoy aprendiendo inglés.",["I am learning English."]],
+ ["Can you help me, please?","¿Puedes ayudarme, por favor?",["Could you help me, please?"]],
+ ["What time do we start?","¿A qué hora empezamos?"]
+ ],
+ d:[
+ ["Hi! Are you new here?","¡Hola! ¿Eres nuevo aquí?","I'm new here.","Soy nuevo aquí.",["Yes, I'm new here.","I am new here."]],
+ ["Welcome to the team!","¡Bienvenido al equipo!","I'm learning English.","Estoy aprendiendo inglés.",["I am learning English."]],
+ ["No problem. Just ask if you need anything.","No pasa nada. Pregunta si necesitas algo.","What time do we start?","¿A qué hora empezamos?"],
+ ["At eight. Let me show you your desk.","A las ocho. Te enseño tu mesa.","Thank you.","Gracias.",["Thanks."]]
+ ]
+}
+];
+
+const $=s=>document.querySelector(s);
+const app=$("#app");
+const escapeHTML=s=>String(s??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+const e=escapeHTML;
+const shuffle=a=>{
+ const b=[...a];
+ for(let i=b.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [b[i],b[j]]=[b[j],b[i]];
+ }
+ return b;
+};
+function load(key,fallback){
+ try{return JSON.parse(localStorage.getItem(key))??fallback}
+ catch{return fallback}
+}
+const oldCfg=load("en-cfg",{});
+const defaults={accent:oldCfg.ac==="en-GB"?"en-GB":"en-US",translation:oldCfg.es!==false,autoplay:false};
+const saved=load("hello-v2",{});
+const state={
+ cfg:{...defaults,...(saved.cfg||{})},
+ units:saved.units&&typeof saved.units==="object"?saved.units:{},
+ cards:saved.cards&&typeof saved.cards==="object"?saved.cards:{},
+ days:Array.isArray(saved.days)?saved.days:[],
+ sessions:Number(saved.sessions)||0
+};
+let storageWarned=false;
+function save(){
+ try{localStorage.setItem("hello-v2",JSON.stringify(state))}
+ catch{
+  if(!storageWarned){
+   storageWarned=true;
+   toast("No se puede guardar en este navegador. Exporta una copia en Ajustes.");
+  }
+ }
+}
+function dayKey(){
+ const d=new Date();
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function activity(){
+ const day=dayKey();
+ if(!state.days.includes(day))state.days.push(day);
+ save();
+}
+function toast(text){
+ const box=$("#toast");box.textContent=text;box.hidden=false;
+ clearTimeout(toast.timer);
+ toast.timer=setTimeout(()=>box.hidden=true,4500);
+}
+function button(text,fn,cls="ghost"){
+ const b=document.createElement("button");
+ b.type="button";b.className=cls;b.textContent=text;b.onclick=fn;
+ return b;
+}
+function title(text){
+ const h=document.createElement("h1");h.tabIndex=-1;h.textContent=text;
+ app.append(h);return h;
+}
+function card(html=""){
+ const d=document.createElement("section");d.className="card";d.innerHTML=html;
+ return d;
+}
+function feedback(parent,ok,text){
+ const d=document.createElement("div");
+ d.className="feedback "+(ok?"good":"bad");
+ d.setAttribute("role","status");d.textContent=text;parent.append(d);return d;
+}
+function validUnit(id){return U.find(u=>u.id===id)}
+function learned(id){return !!state.units[id]?.passed}
+function dueCards(){
+ return Object.values(state.cards).filter(c=>validUnit(c.unit)&&Number(c.due)<=Date.now());
+}
+function remember(unit,index,correct){
+ const key=`${unit}:${index}`;
+ const prev=state.cards[key]||{};
+ const stage=correct?Math.min((Number(prev.stage)||0)+1,5):0;
+ const days=[0,1,3,7,14,30];
+ state.cards[key]={
+  unit,index,stage,
+  due:Date.now()+(correct?days[stage]*86400000:600000),
+  misses:(Number(prev.misses)||0)+(correct?0:1)
+ };
+ save();
+}
+
+/* Audio y micrófono: una operación a la vez. */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let recognition=null,recorder=null,micStream=null,recordTimer=null;
+let mediaURLs=[],voices=[],viewId=0,tab="home";
+const synthesis=window.speechSynthesis;
+function updateVoices(){voices=synthesis?synthesis.getVoices():[]}
+if(synthesis){
+ updateVoices();
+ synthesis.addEventListener("voiceschanged",updateVoices);
+}
+function stopSpeech(){if(synthesis)synthesis.cancel()}
+function speak(text,slow=false){
+ if(!synthesis){toast("Este navegador no tiene lectura de voz.");return}
+ if(recognition||recorder){toast("Detén el micrófono antes de escuchar.");return}
+ stopSpeech();
+ const utterance=new SpeechSynthesisUtterance(text);
+ utterance.lang=state.cfg.accent;
+ utterance.rate=slow?.65:.9;
+ const voice=voices.find(v=>v.lang.replace("_","-")===state.cfg.accent)||
+  voices.find(v=>/^en[-_]/i.test(v.lang));
+ if(voice)utterance.voice=voice;
+ utterance.onerror=event=>{
+  if(!["interrupted","canceled"].includes(event.error))toast("No se pudo reproducir la voz. Pulsa de nuevo o revisa el volumen.");
+ };
+ synthesis.speak(utterance);
+}
+function micError(code){
+ const map={
+  "not-allowed":"El permiso está bloqueado. Abre esta web directamente en Safari o Chrome y permite el micrófono en los ajustes del sitio.",
+  "service-not-allowed":"El servicio de reconocimiento no está permitido. Revisa los ajustes de voz y dictado del dispositivo.",
+  "audio-capture":"No se pudo acceder al micrófono. Comprueba que no lo use otra aplicación.",
+  "no-speech":"No se detectó voz. Acércate al micrófono y vuelve a intentarlo.",
+  "network":"El servicio de reconocimiento necesita conexión o no está disponible ahora.",
+  "language-not-supported":"El reconocimiento de inglés no está disponible con esta configuración."
+ };
+ return map[code]||"No se pudo iniciar el reconocimiento. Puedes escribir o usar el dictado del teclado.";
+}
+function capture(btn,onText,status){
+ if(recognition){recognition.stop();return}
+ if(recorder){toast("Detén antes la grabación.");return}
+ if(!window.isSecureContext){
+  status.textContent="El micrófono necesita HTTPS o localhost. Puedes escribir mientras tanto.";return;
+ }
+ if(!SR){
+  status.textContent="Este navegador no ofrece reconocimiento. Usa el dictado del teclado o escribe. La grabación puede funcionar por separado.";return;
+ }
+ stopSpeech();
+ const original=btn.textContent,current=viewId,r=new SR();
+ let error=false,gotText=false;
+ recognition=r;r.lang=state.cfg.accent;r.interimResults=true;
+ r.continuous=false;r.maxAlternatives=1;
+ btn.textContent="⏹ Detener";
+ btn.setAttribute("aria-pressed","true");
+ status.textContent="Escuchando… Di tu respuesta en inglés.";
+ r.onresult=event=>{
+  if(current!==viewId)return;
+  const text=Array.from(event.results).map(x=>x[0].transcript).join(" ");
+  gotText=!!text.trim();onText(text);
+ };
+ r.onerror=event=>{
+  error=true;
+  if(current===viewId&&event.error!=="aborted")status.textContent=micError(event.error);
+ };
+ r.onend=()=>{
+  if(recognition===r)recognition=null;
+  btn.textContent=original;btn.setAttribute("aria-pressed","false");
+  if(current===viewId&&!error)
+   status.textContent=gotText?"Texto capturado. Revísalo antes de comprobar o enviar.":"No se recibió texto. Puedes volver a intentarlo.";
+ };
+ try{r.start()}
+ catch{
+  recognition=null;btn.textContent=original;
+  btn.setAttribute("aria-pressed","false");
+  status.textContent="No se pudo iniciar el micrófono. Intenta de nuevo o escribe.";
+ }
+}
+function stopRecording(){
+ if(recorder&&recorder.state!=="inactive"){
+  try{recorder.stop()}catch{}
+ }
+ if(micStream)micStream.getTracks().forEach(t=>t.stop());
+ micStream=null;clearTimeout(recordTimer);
+}
+function cleanup(){
+ viewId++;
+ stopSpeech();
+ if(recognition){try{recognition.abort()}catch{}recognition=null}
+ stopRecording();
+ document.querySelectorAll("audio").forEach(a=>a.pause());
+ mediaURLs.forEach(url=>URL.revokeObjectURL(url));mediaURLs=[];
+}
+async function record(btn,output){
+ if(recorder){stopRecording();return}
+ if(recognition){toast("Detén antes el reconocimiento.");return}
+ if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
+  output.textContent="La grabación necesita HTTPS y un navegador compatible. Prueba abriendo la web directamente en Safari o Chrome.";return;
+ }
+ const current=viewId;
+ btn.disabled=true;output.textContent="Solicitando acceso al micrófono…";
+ let stream,mr;
+ try{
+  stopSpeech();
+  stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  if(current!==viewId){stream.getTracks().forEach(t=>t.stop());return}
+  micStream=stream;
+  const mime=["audio/webm;codecs=opus","audio/mp4","audio/webm"]
+   .find(t=>MediaRecorder.isTypeSupported(t));
+  mr=new MediaRecorder(stream,mime?{mimeType:mime}:{});
+  recorder=mr;
+  const chunks=[];
+  mr.ondataavailable=event=>{if(event.data.size)chunks.push(event.data)};
+  mr.onstop=()=>{
+   clearTimeout(recordTimer);
+   stream.getTracks().forEach(t=>t.stop());
+   if(micStream===stream)micStream=null;
+   if(recorder===mr)recorder=null;
+   if(current!==viewId)return;
+   btn.textContent="⏺ Grabar mi voz";btn.disabled=false;
+   output.replaceChildren();
+   if(!chunks.length){output.textContent="No se guardó audio. Vuelve a intentarlo.";return}
+   const blob=new Blob(chunks,{type:mr.mimeType||chunks[0].type});
+   const url=URL.createObjectURL(blob);mediaURLs.push(url);
+   const audio=document.createElement("audio");
+   audio.controls=true;audio.src=url;
+   const caption=document.createElement("p");
+   caption.className="muted small";
+   caption.textContent="Escucha tu grabación y compárala con el modelo. No se sube a esta app.";
+   output.append(caption,audio);
+  };
+  mr.onerror=()=>{stopRecording();toast("La grabación se interrumpió. Vuelve a intentarlo.")};
+  mr.start();btn.disabled=false;btn.textContent="⏹ Parar grabación";
+  output.textContent="Grabando. Máximo 30 segundos. Pulsa Parar cuando termines.";
+  recordTimer=setTimeout(stopRecording,30000);
+ }catch{
+  if(stream)stream.getTracks().forEach(t=>t.stop());
+  if(recorder===mr)recorder=null;
+  if(micStream===stream)micStream=null;
+  if(current!==viewId)return;
+  btn.disabled=false;btn.textContent="⏺ Grabar mi voz";
+  output.textContent="No se pudo grabar. Revisa el permiso de micrófono y abre la página fuera de marcos o vistas integradas.";
+ }
+}
+function audioTools(parent,text){
+ const row=document.createElement("div");row.className="tools";
+ row.append(
+  button("🔊 Escuchar",()=>speak(text)),
+  button("🐢 Despacio",()=>speak(text,true))
+ );
+ parent.append(row);return row;
+}
+function inputWithMic(parent,placeholder="Escribe en inglés…"){
+ const input=document.createElement("textarea");
+ input.rows=2;input.placeholder=placeholder;
+ input.setAttribute("aria-label",placeholder);
+ input.setAttribute("autocapitalize","off");
+ input.setAttribute("autocomplete","off");
+ input.spellcheck=false;input.lang="en";
+ const status=document.createElement("p");
+ status.className="muted small";status.setAttribute("role","status");
+ const b=button("🎤 Dictar",()=>capture(b,t=>{input.value=t},status));
+ const row=document.createElement("div");row.className="tools";row.append(b);
+ parent.append(input,row,status);
+ return input;
+}
+
+/* Equivalencia textual. No es evaluación fonética ni semántica. */
+function normal(text){
+ let s=String(text).toLowerCase().normalize("NFD")
+  .replace(/[\u0300-\u036f]/g,"").replace(/[‘’]/g,"'");
+ const contractions={
+  "i'm":"i am","you're":"you are","he's":"he is","she's":"she is",
+  "it's":"it is","we're":"we are","they're":"they are",
+  "don't":"do not","doesn't":"does not","can't":"cannot",
+  "i'd":"i would","that's":"that is","what's":"what is",
+  "where's":"where is","here's":"here is","i've":"i have",
+  "isn't":"is not","aren't":"are not"
+ };
+ for(const [a,b] of Object.entries(contractions))
+  s=s.replace(new RegExp("\\b"+a+"\\b","g"),b);
+ const nums={zero:"0",one:"1",two:"2",three:"3",four:"4",five:"5",six:"6",seven:"7",eight:"8",nine:"9",ten:"10"};
+ return s.replace(/[^a-z0-9\s]/g," ").trim().split(/\s+/)
+  .filter(Boolean).map(w=>nums[w]||w).join(" ");
+}
+function exact(answer,expected,alternatives=[]){
+ const n=normal(answer);
+ return [expected,...alternatives].some(x=>normal(x)===n);
+}
+function similarity(target,heard){
+ const a=normal(target).split(" ").filter(Boolean);
+ const b=normal(heard).split(" ").filter(Boolean);
+ if(!a.length)return 0;
+ const d=Array.from({length:a.length+1},()=>Array(b.length+1).fill(0));
+ for(let i=0;i<=a.length;i++)d[i][0]=i;
+ for(let j=0;j<=b.length;j++)d[0][j]=j;
+ for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)
+  d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+ return Math.max(0,Math.round(100*(1-d[a.length][b.length]/Math.max(a.length,b.length))));
+}
+
+/* Navegación. Cada vista detiene y libera los recursos de audio. */
+function begin(which){
+ cleanup();tab=which;app.replaceChildren();
+ document.querySelectorAll("[data-tab]").forEach(b=>{
+  if(b.dataset.tab===which)b.setAttribute("aria-current","page");
+  else b.removeAttribute("aria-current");
+ });
+ window.scrollTo({top:0,behavior:"instant"});
+}
+function navigate(which){
+ if(which==="home")home();
+ else if(which==="units")units();
+ else if(which==="talk")talkPicker();
+ else voice();
+}
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>navigate(b.dataset.tab));
+$("#settingsBtn").onclick=settings;
+
+function home(){
+ begin("home");
+ const done=U.filter(u=>learned(u.id)).length;
+ const next=U.find(u=>!learned(u.id))||U[0];
+ const due=dueCards().length;
+ const hero=card(`
+  <span class="tag">DE CERO, PASO A PASO</span>
+  <h1 style="margin-top:18px">Tu próxima frase<br>empieza aquí.</h1>
+  <p class="muted">Escucha, entiende y úsala. Una sesión corta es un buen comienzo.</p>
+  <div id="startHere" class="tools"></div>
+ `);
+ hero.classList.add("hero");app.append(hero);
+ $("#startHere").append(button(
+  done===U.length?"Volver a practicar →":`Continuar: ${next.title} →`,
+  ()=>lesson(next.id,0),"btn gold"
+ ));
+ const stats=document.createElement("div");stats.className="stats";
+ stats.innerHTML=`
+  <div class="stat"><strong>${done}/${U.length}</strong><small>unidades</small></div>
+  <div class="stat"><strong>${state.days.length}</strong><small>días activos</small></div>
+  <div class="stat"><strong>${due}</strong><small>repasos pendientes</small></div>`;
+ app.append(stats);
+ const daily=card(`
+  <h2>Tu rutina de hoy</h2>
+  <p>① Aprende cuatro frases.<br>② Comprueba lo que recuerdas.<br>③ Úsalas en una conversación.</p>
+ `);
+ daily.append(button("Empezar mi clase",()=>lesson(next.id,0),"btn"));
+ app.append(daily);
+ const reviewBox=card(`<h3>🧠 Que no se te olvide</h3>
+  <p class="muted">Los errores vuelven antes; los aciertos se espacian.</p>`);
+ reviewBox.append(button(due?`Repasar ${due} frases`:"Practicar frases aprendidas",startReview,"ghost"));
+ app.append(reviewBox);
+ const guide=document.createElement("details");guide.className="card";
+ guide.innerHTML=`<summary>Qué hace esta versión y qué no</summary>
+  <p>Este es un curso inicial de 12 unidades. No certifica niveles ni promete fluidez por sí solo.</p>
+  <p>La conversación funciona con turnos y respuestas de ejemplo. No es una IA generativa y no interpreta cualquier respuesta libre.</p>
+  <p>El reconocimiento compara texto, no evalúa fonemas ni acento. El servicio de voz del navegador puede procesar audio en servidores de su proveedor.</p>
+  <p>Tu progreso se guarda en este navegador. Las grabaciones son temporales y no se suben a esta app. Exporta una copia desde Ajustes.</p>`;
+ app.append(guide);
+}
+function units(){
+ begin("units");title("Tu camino al inglés");
+ app.insertAdjacentHTML("beforeend",'<p class="muted">Empieza por el principio o elige una situación. No hay bloqueos.</p>');
+ const grid=document.createElement("div");grid.className="grid";
+ U.forEach((u,i)=>{
+  const p=state.units[u.id];
+  const b=button("",()=>unitDetail(u.id),"card unit"+(learned(u.id)?" done":""));
+  b.innerHTML=`<span class="emoji" aria-hidden="true">${u.icon}</span>
+   <small>UNIDAD ${i+1}</small><b>${e(u.title)}</b>
+   <small>${e(u.goal)}</small>
+   <small style="margin-top:10px">${learned(u.id)?"✓ Evaluación superada":p?`Mejor evaluación: ${Number(p.best)||0}%`:"Por descubrir"}</small>`;
+  grid.append(b);
+ });
+ app.append(grid);
+}
+function unitDetail(id){
+ begin("units");const u=validUnit(id);
+ app.append(button("‹ Todas las unidades",units));
+ title(`${u.icon} ${u.title}`);
+ app.insertAdjacentHTML("beforeend",`<p class="muted">${e(u.goal)}</p>`);
+ const box=card(`<p class="notice">${e(u.tip)}</p>`);
+ const row=document.createElement("div");row.className="tools";
+ row.append(
+  button("▶ Clase guiada",()=>lesson(id,0),"btn"),
+  button("✓ Evaluación",()=>startTest(id)),
+  button("💬 Conversación",()=>startTalk(id))
+ );
+ box.append(row);app.append(box);
+ u.p.forEach(p=>{
+  const c=card(`<h3 lang="en">${e(p[0])}</h3>${state.cfg.translation?`<p class="muted">${e(p[1])}</p>`:""}`);
+  audioTools(c,p[0]);app.append(c);
+ });
+}
+function lesson(id,index){
+ const u=validUnit(id);
+ if(index>=u.p.length){startTest(id);return}
+ begin("units");activity();
+ const p=u.p[index];
+ app.append(button("‹ Salir de la clase",()=>unitDetail(id)));
+ const c=card(`
+  <span class="tag">ESCUCHA Y PRACTICA · ${index+1}/${u.p.length}</span>
+  <div class="progress" aria-label="Progreso de la clase"><i style="width:${100*index/u.p.length}%"></i></div>
+  <h2>${e(u.title)}</h2>
+  <div class="phrase" lang="en">${e(p[0])}</div>
+  <p>${e(p[1])}</p>
+  <p class="muted">Escucha dos veces. Repite en voz alta. Después intenta decirla sin mirar.</p>
+ `);
+ audioTools(c,p[0]);
+ const detail=document.createElement("details");
+ detail.innerHTML="<summary>Practicar con mi voz o por escrito</summary>";
+ const field=inputWithMic(detail,"Di o escribe la frase en inglés…");
+ detail.append(button("Comparar texto",()=>{
+  if(!field.value.trim()){toast("Primero di o escribe la frase.");return}
+  const old=detail.querySelector(".feedback");if(old)old.remove();
+  const score=similarity(p[0],field.value);
+  feedback(detail,score>=80,`${score}% de coincidencia textual. Modelo: ${p[0]} No es una nota de pronunciación.`);
+ }));
+ const recOut=document.createElement("div");
+ const rb=button("⏺ Grabar mi voz",()=>record(rb,recOut));
+ detail.append(rb,recOut);c.append(detail);
+ c.append(button(index===u.p.length-1?"Pasar a la evaluación →":"Ya practiqué · siguiente →",()=>{
+  lesson(id,index+1);
+ },"btn wide"));
+ app.append(c);
+ if(index>0)app.append(button("‹ Frase anterior",()=>lesson(id,index-1)));
+ if(state.cfg.autoplay)speak(p[0]);
+}
+
+/* La nota usa TODAS las preguntas. Saltar es incorrecto.
+   Solo una evaluación completa puede superar una unidad. */
+let test=null;
+function makeQuestions(u){
+ const questions=[];
+ u.p.forEach((p,index)=>{
+  questions.push({type:"meaning",index,p});
+  questions.push({type:index%2?"write":"order",index,p});
+ });
+ questions.push({type:"dict",index:0,p:u.p[0]});
+ return shuffle(questions);
+}
+function startTest(id){
+ const u=validUnit(id);
+ test={id,questions:makeQuestions(u),at:0,results:[]};
+ renderTest();
+}
+function renderTest(){
+ if(!test)return;
+ if(test.at>=test.questions.length){finishTest();return}
+ begin("units");
+ const q=test.questions[test.at],u=validUnit(test.id);
+ app.append(button("✕ Salir de la evaluación",()=>unitDetail(test.id)));
+ const box=card(`
+  <span class="tag">EVALUACIÓN · ${test.at+1}/${test.questions.length}</span>
+  <div class="progress"><i style="width:${100*test.at/test.questions.length}%"></i></div>
+  <h2>${e(u.title)}</h2>
+ `);
+ app.append(box);
+ let answered=false;
+ const controls=document.createElement("div");controls.className="tools";
+ const skip=button("Saltar · cuenta como error",()=>answer(false));
+ function answer(ok){
+  if(answered)return;answered=true;
+  if(recognition){try{recognition.abort()}catch{}recognition=null}
+  test.results.push(ok);
+  remember(test.id,q.index,ok);
+  activity();
+  box.querySelectorAll("button,input,textarea").forEach(b=>b.disabled=true);
+  feedback(box,ok,ok?"✓ Correcto.":`Respuesta de referencia: ${q.p[0]} — ${q.p[1]}`);
+  const next=button(test.at===test.questions.length-1?"Ver resultado":"Siguiente →",()=>{
+   test.at++;renderTest();
+  },"btn");
+  controls.replaceChildren(next);next.focus();
+ }
+ if(q.type==="meaning"){
+  box.insertAdjacentHTML("beforeend",`<p class="muted">¿Qué significa esta frase?</p><div class="phrase" lang="en">${e(q.p[0])}</div>`);
+  audioTools(box,q.p[0]);
+  const options=shuffle([...new Set([q.p[1],...shuffle(u.p.filter(p=>p!==q.p)).slice(0,3).map(p=>p[1])])]);
+  options.forEach(option=>{
+   const b=button(option,()=>answer(option===q.p[1]),"choice");box.append(b);
+  });
+ }else if(q.type==="order"){
+  box.insertAdjacentHTML("beforeend",`<p class="muted">Ordena las palabras para expresar:</p><h3>${e(q.p[1])}</h3>`);
+  const tokens=shuffle(q.p[0].split(/\s+/).map((word,id)=>({word,id})));
+  const selected=[];
+  const area=document.createElement("div");area.className="answer";
+  area.setAttribute("aria-label","Frase ordenada");
+  const pool=document.createElement("div");
+  const check=button("Comprobar",()=>{
+   answer(exact(selected.map(t=>t.word).join(" "),q.p[0],q.p[2]||[]));
+  },"btn");
+  function draw(){
+   area.replaceChildren();pool.replaceChildren();
+   selected.forEach((t,i)=>area.append(button(t.word,()=>{selected.splice(i,1);draw()},"token")));
+   tokens.filter(t=>!selected.includes(t)).forEach(t=>pool.append(button(t.word,()=>{selected.push(t);draw()},"token")));
+   check.disabled=selected.length!==tokens.length;
+  }
+  box.append(area,pool,check);draw();
+ }else{
+  if(q.type==="dict"){
+   box.insertAdjacentHTML("beforeend",'<h3>Escucha y escribe lo que oyes.</h3><p class="muted">Puedes reproducirlo tantas veces como quieras.</p>');
+   audioTools(box,q.p[0]);
+  }else{
+   box.insertAdjacentHTML("beforeend",`<p class="muted">Escribe esta idea en inglés:</p><div class="phrase">${e(q.p[1])}</div>`);
+  }
+  const input=document.createElement("textarea");input.rows=2;
+  input.placeholder="Tu respuesta en inglés";
+  input.setAttribute("aria-label","Tu respuesta en inglés");
+  input.setAttribute("autocapitalize","off");input.spellcheck=false;input.lang="en";
+  box.append(input);
+  box.append(button("Comprobar",()=>{
+   if(!input.value.trim()){toast("Escribe una respuesta o pulsa Saltar.");return}
+   answer(exact(input.value,q.p[0],q.p[2]||[]));
+  },"btn"));
+ }
+ controls.append(skip);box.append(controls);
+ box.insertAdjacentHTML("beforeend",'<p class="muted small" style="margin-top:14px">Se admiten las variantes incluidas en la lección. Una respuesta diferente podría ser válida aunque este ejercicio no la contemple.</p>');
+}
+function finishTest(){
+ const current=test;
+ const correct=current.results.filter(Boolean).length;
+ const total=current.questions.length;
+ const percent=Math.round(100*correct/total);
+ const pass=correct/total>=.8;
+ const old=state.units[current.id]||{};
+ state.units[current.id]={
+  best:Math.max(Number(old.best)||0,percent),
+  passed:!!old.passed||pass,
+  last:percent,
+  attempts:(Number(old.attempts)||0)+1
+ };
+ state.sessions++;activity();save();
+ begin("units");
+ const box=card(`
+  <span class="tag">EVALUACIÓN COMPLETA</span>
+  <h1 style="margin-top:18px">${percent}%</h1>
+  <h2>${pass?"¡Objetivo de la unidad conseguido!":"Ya sabes qué practicar."}</h2>
+  <p>${correct} respuestas correctas de ${total}. Las preguntas saltadas también cuentan.</p>
+  <p class="muted">${pass?"Has superado esta evaluación de frases. Ahora practica usándolas en contexto.":"Tus errores volverán en el repaso. Necesitas acertar al menos el 80 % para superar esta evaluación."}</p>
+ `);
+ const row=document.createElement("div");row.className="tools";
+ row.append(
+  button("💬 Usar lo aprendido",()=>startTalk(current.id),"btn"),
+  button("Repetir evaluación",()=>startTest(current.id)),
+  button("Volver a mi camino",home)
+ );
+ box.append(row);app.append(box);
+}
+
+/* Repaso con recuperación activa y autoevaluación explícita. */
+function startReview(){
+ const due=dueCards();
+ let list=due.length?shuffle(due):
+  shuffle(Object.values(state.cards).filter(c=>validUnit(c.unit)));
+ if(!list.length){
+  list=U[0].p.map((_,index)=>({unit:U[0].id,index}));
+ }
+ review(list.slice(0,12),0);
+}
+function review(list,index){
+ begin("home");
+ if(index>=list.length){
+  const done=card("<h1>Repaso terminado 🧠</h1><p>Practicar recordar es más útil que releer sin intentarlo.</p>");
+  done.append(button("Volver al inicio",home,"btn"));app.append(done);return;
+ }
+ const item=list[index],u=validUnit(item.unit),p=u?.p[item.index];
+ if(!p){review(list,index+1);return}
+ const box=card(`
+  <span class="tag">REPASO · ${index+1}/${list.length}</span>
+  <h2 style="margin-top:18px">¿Cómo lo dirías en inglés?</h2>
+  <div class="phrase">${e(p[1])}</div>
+  <p class="muted">Dilo en voz alta o escríbelo antes de mostrar la respuesta.</p>
+ `);
+ const input=document.createElement("textarea");
+ input.rows=2;input.placeholder="Intenta recordar…";
+ input.setAttribute("aria-label","Tu respuesta de repaso");input.lang="en";box.append(input);
+ const reveal=button("Mostrar respuesta",()=>{
+  reveal.remove();input.disabled=true;
+  const out=document.createElement("div");out.className="notice";
+  out.textContent=p[0];box.append(out);audioTools(box,p[0]);
+  if(input.value.trim())
+   feedback(box,exact(input.value,p[0],p[2]||[]),
+    exact(input.value,p[0],p[2]||[])?"Tu texto coincide con una respuesta admitida.":"Compara tu respuesta con el modelo; puede haber otras formas válidas.");
+  const row=document.createElement("div");row.className="tools";
+  function rate(ok){remember(item.unit,item.index,ok);activity();review(list,index+1)}
+  row.append(
+   button("Necesito repetir",()=>rate(false)),
+   button("Lo recordé sin ayuda",()=>rate(true),"btn")
+  );box.append(row);
+ },"btn");
+ box.append(reveal);app.append(box);
+ app.append(button("Terminar repaso",home));
+}
+
+/* Conversación guiada, sin pretender que existe una IA. */
+let conversation=null;
+function talkPicker(){
+ begin("talk");title("De escuchar a responder");
+ const box=card(`
+  <span class="tag">CONVERSACIÓN GUIADA · SIN API</span>
+  <p style="margin-top:16px">Escucha un turno, prepara tu respuesta y envíala. Si te atascas, pide una pista.</p>
+  <p class="muted">Este simulador sigue un guion. Las respuestas personales o libres pueden ser correctas aunque no coincidan con sus ejemplos.</p>
+  <label for="talkUnit">¿Dónde quieres practicar?</label>
+  <select id="talkUnit">${U.map(u=>`<option value="${u.id}">${e(u.icon+" "+u.title)}</option>`).join("")}</select>
+ `);
+ box.append(button("Empezar a conversar →",()=>startTalk($("#talkUnit").value),"btn"));
+ app.append(box);
+ const info=document.createElement("details");info.className="card";
+ info.innerHTML=`<summary>¿Y una conversación libre con IA?</summary>
+  <p>Para mantener conversaciones abiertas y recibir correcciones adaptadas hace falta conectar un servicio de IA mediante un servidor que proteja la clave.</p>
+  <p>Esta versión no lo incluye: no muestra botones de IA que no funcionan ni coloca claves secretas en el HTML.</p>`;
+ app.append(info);
+}
+function startTalk(id){
+ conversation={id,index:0,history:[],independent:0,attempts:0};
+ renderTalk();
+}
+function renderTalk(){
+ begin("talk");
+ const c=conversation,u=validUnit(c.id);
+ app.append(button("‹ Cambiar de situación",talkPicker));
+ title(`${u.icon} ${u.title}`);
+ if(c.index>=u.d.length){
+  const box=card(`
+   <h2>¡Has completado la conversación! 🎉</h2>
+   <p>Resolviste ${c.independent} de ${u.d.length} turnos con una respuesta admitida y sin abrir la pista.</p>
+   <p class="muted">Esto mide práctica guiada, no tu nivel general ni la pronunciación. Prueba ahora a decirlo con menos apoyo.</p>
+  `);
+  box.append(button("Repetir conversación",()=>startTalk(u.id),"btn"));
+  box.append(button("Otra situación",talkPicker));
+  app.append(box);return;
+ }
+ const history=document.createElement("div");
+ c.history.forEach(turn=>{
+  const d=document.createElement("div");d.className="bubble"+(turn.you?" you":"");
+  const who=document.createElement("small");who.className="muted";
+  who.textContent=turn.you?"TÚ":"INTERLOCUTOR";
+  const text=document.createElement("p");text.lang="en";text.textContent=turn.text;
+  d.append(who,text);history.append(d);
+ });
+ app.append(history);
+ const line=u.d[c.index];
+ const box=card(`
+  <span class="tag">TU TURNO · ${c.index+1}/${u.d.length}</span>
+  <div class="bubble"><small class="muted">INTERLOCUTOR</small>
+  <p class="phrase" lang="en" style="font-size:1.4rem">${e(line[0])}</p>
+  ${state.cfg.translation?`<p class="muted">${e(line[1])}</p>`:""}</div>
+  <p>Tu objetivo: <strong>${e(line[3])}</strong></p>
+ `);
+ audioTools(box,line[0]);
+ const input=inputWithMic(box,"Habla o escribe tu respuesta en inglés…");
+ let hinted=false,resolved=false;
+ const report=document.createElement("div");report.setAttribute("aria-live","polite");
+ const hint=button("💡 Necesito una pista",()=>{
+  hinted=true;hint.disabled=true;
+  const d=document.createElement("div");d.className="notice";
+  d.textContent=`Puedes decir: ${line[2]}`;box.append(d);audioTools(d,line[2]);
+ });
+ function continueTurn(text,independent){
+  if(resolved)return;resolved=true;
+  if(independent)c.independent++;
+  c.history.push({you:false,text:line[0]},{you:true,text});
+  c.index++;activity();renderTalk();
+ }
+ const send=button("Enviar respuesta",()=>{
+  const text=input.value.trim();
+  if(!text){toast("Di o escribe una respuesta primero.");return}
+  if(recognition){try{recognition.abort()}catch{}recognition=null}
+  c.attempts++;report.replaceChildren();
+  if(exact(text,line[2],line[4]||[])){
+   feedback(report,true,"✓ Tu respuesta coincide con una forma admitida.");
+   send.disabled=true;hint.disabled=true;input.disabled=true;
+   report.append(button("Continuar conversación →",()=>continueTurn(text,!hinted),"btn"));
+  }else{
+   feedback(report,false,"Tu respuesta no coincide con las variantes de este guion. Eso no demuestra que sea incorrecta. Revisa el modelo o vuelve a intentarlo.");
+   report.append(button("Ver modelo y continuar",()=>{
+    hinted=true;
+    const d=document.createElement("p");d.textContent=`Modelo: ${line[2]}`;
+    report.replaceChildren(d);
+    audioTools(report,line[2]);
+    report.append(button("Continuar con el modelo →",()=>continueTurn(line[2],false),"btn"));
+   }));
+  }
+ },"btn");
+ const row=document.createElement("div");row.className="tools";row.append(send,hint);
+ box.append(row,report);app.append(box);
+ if(state.cfg.autoplay)speak(line[0]);
+}
+
+/* Práctica oral transparente y grabación independiente del reconocimiento. */
+const sounds=[
+ ["TH de think","Pon suavemente la punta de la lengua entre los dientes y deja salir aire. No cierres el paso del aire como al decir una t.",
+  "Thank you. I think it's three."],
+ ["TH de this","Usa una posición parecida, pero con vibración en la garganta.",
+  "This is my mother. They are there."],
+ ["V y B","Para v, los dientes superiores rozan el labio inferior. Para b se juntan ambos labios.",
+  "The van is very big."],
+ ["I breve e I larga","Escucha ship y sheep. No cambia solo la duración: también la posición y tensión de la vocal.",
+  "ship, sheep, sit, seat, live, leave"],
+ ["S inicial","Comienza directamente con el sonido s, sin añadir una e delante.",
+  "I speak Spanish. The school is on this street."],
+ ["Consonantes finales","Mantén la consonante final sin añadir una vocal al terminar.",
+  "I need help. This is my desk."],
+ ["Números del uno al diez","Escucha y repite. Comprueba especialmente three y eight.",
+  "one, two, three, four, five, six, seven, eight, nine, ten"]
+];
+function voice(){
+ begin("voice");title("Escucha tu progreso");
+ const status=card(`
+  <h3>Tu navegador</h3>
+  <p class="small">
+   Lectura de voz: ${synthesis?"disponible":"no disponible"}<br>
+   Reconocimiento: ${SR?"detectado; requiere permiso y servicio compatible":"no detectado"}<br>
+   Grabación: ${window.MediaRecorder&&navigator.mediaDevices?"detectada; requiere permiso":"no detectada"}<br>
+   Conexión segura: ${window.isSecureContext?"sí":"no; usa HTTPS"}
+  </p>
+ `);
+ app.append(status);
+ const box=card(`
+  <h2>Tu laboratorio de voz</h2>
+  <label for="voiceTarget">Frase que quieres practicar</label>
+  <textarea id="voiceTarget" rows="2" lang="en" autocapitalize="off">Hello. My name is Ana.</textarea>
+  <p class="muted small">Primero escucha el modelo; después dicta o grábate.</p>
+ `);
+ const tools=document.createElement("div");tools.className="tools";
+ tools.append(
+  button("🔊 Modelo",()=>speak($("#voiceTarget").value)),
+  button("🐢 Modelo lento",()=>speak($("#voiceTarget").value,true))
+ );box.append(tools);
+ const input=inputWithMic(box,"Texto reconocido o escrito…");
+ const result=document.createElement("div");
+ box.append(button("Comparar palabras",()=>{
+  const target=$("#voiceTarget").value.trim(),heard=input.value.trim();
+  if(!target||!heard){toast("Necesitas una frase modelo y una respuesta.");return}
+  const percent=similarity(target,heard);
+  result.replaceChildren();
+  feedback(result,percent>=80,`${percent}% de coincidencia textual.`);
+  const p=document.createElement("p");p.className="muted small";
+  p.textContent="No es una nota de pronunciación. Un acento correcto puede transcribirse mal y una pronunciación imprecisa puede reconocerse bien. Si escribiste el texto, solo estás comparando escritura.";
+  result.append(p);activity();
+ },"btn"));
+ box.append(result);
+ const recOut=document.createElement("div");
+ const rb=button("⏺ Grabar mi voz",()=>record(rb,recOut));
+ const row=document.createElement("div");row.className="tools";row.append(rb);
+ box.append(row,recOut);app.append(box);
+ const safety=document.createElement("details");safety.className="card";
+ safety.innerHTML=`<summary>Si el micrófono no funciona</summary>
+  <p>1. Abre esta página directamente con HTTPS en Safari o Chrome, no dentro de un artefacto ni un navegador integrado.</p>
+  <p>2. Revisa el permiso del micrófono para este sitio en los ajustes del navegador y del dispositivo.</p>
+  <p>3. Reconocimiento y grabación son funciones distintas. Puede funcionar una y no la otra.</p>
+  <p>4. Si falla el reconocimiento, añade el teclado inglés y usa el dictado del teclado. También puedes escribir.</p>
+  <p>El reconocimiento puede depender de internet y del proveedor del navegador. Ninguna web puede saltarse un permiso denegado.</p>`;
+ app.append(safety);
+ sounds.forEach(([name,tip,phrase])=>{
+  const d=card(`<h3>${e(name)}</h3><p class="muted">${e(tip)}</p><p lang="en"><strong>${e(phrase)}</strong></p>`);
+  audioTools(d,phrase);
+  d.append(button("Practicar esta frase",()=>{
+   $("#voiceTarget").value=phrase;input.value="";
+   box.scrollIntoView({behavior:"smooth",block:"start"});
+   $("#voiceTarget").focus();
+  }));
+  app.append(d);
+ });
+}
+
+/* Ajustes, copia de seguridad y conservación de datos originales. */
+function settings(){
+ const back=tab;begin(back);title("A tu manera");
+ const box=card(`
+  <label for="accent">Modelo de voz</label>
+  <select id="accent">
+   <option value="en-US">Estadounidense</option>
+   <option value="en-GB">Británico</option>
+  </select>
+  <label class="check"><input id="translation" type="checkbox"> Mostrar traducciones en guiones y conversaciones</label>
+  <label class="check"><input id="autoplay" type="checkbox"> Leer automáticamente los turnos cuando el navegador lo permita</label>
+  <p class="muted small">Las voces disponibles dependen del dispositivo. Las pantallas de aprendizaje pueden mostrar español aunque ocultes la ayuda del guion.</p>
+ `);
+ app.append(box);
+ $("#accent").value=state.cfg.accent;
+ $("#translation").checked=state.cfg.translation;
+ $("#autoplay").checked=state.cfg.autoplay;
+ box.append(button("Guardar ajustes",()=>{
+  state.cfg={
+   accent:$("#accent").value,
+   translation:$("#translation").checked,
+   autoplay:$("#autoplay").checked
+  };
+  save();navigate(back);toast("Ajustes guardados.");
+ },"btn"));
+ const data=card(`
+  <h2>Tu progreso es tuyo</h2>
+  <p class="muted">Se guarda en este navegador. No se sincroniza entre dispositivos. Una copia permite recuperarlo si borras los datos del sitio.</p>
+ `);
+ data.append(button("⬇ Exportar mi progreso",()=>{
+  const content=JSON.stringify({version:2,data:state},null,2);
+  const url=URL.createObjectURL(new Blob([content],{type:"application/json"}));
+  const a=document.createElement("a");a.href=url;a.download="hello-progreso.json";
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),5000);
+ }));
+ const label=document.createElement("label");
+ label.textContent="Importar una copia de esta versión";
+ const file=document.createElement("input");file.type="file";file.accept=".json,application/json";
+ file.setAttribute("aria-label","Seleccionar copia de progreso");
+ file.onchange=async()=>{
+  const f=file.files[0];if(!f)return;
+  try{
+   if(f.size>1000000)throw new Error();
+   const backup=JSON.parse(await f.text()),d=backup.data;
+   if(backup.version!==2||!d||typeof d!=="object"||
+      !d.units||typeof d.units!=="object"||Array.isArray(d.units)||
+      !d.cards||typeof d.cards!=="object"||Array.isArray(d.cards)||
+      !Array.isArray(d.days))throw new Error();
+   const newUnits={},newCards={};
+   U.forEach(u=>{
+    const p=d.units[u.id];
+    if(p&&typeof p==="object"){
+     const best=Math.max(0,Math.min(100,Number(p.best)||0));
+     newUnits[u.id]={
+      best,passed:p.passed===true&&best>=80,
+      last:Math.max(0,Math.min(100,Number(p.last)||0)),
+      attempts:Math.max(0,Math.min(100000,Number(p.attempts)||0))
+     };
+    }
+   });
+   U.forEach(u=>u.p.forEach((_,index)=>{
+    const key=`${u.id}:${index}`,c=d.cards[key];
+    if(c&&Number.isFinite(c.due)){
+     newCards[key]={
+      unit:u.id,index,due:c.due,
+      stage:Math.max(0,Math.min(5,Math.floor(Number(c.stage)||0))),
+      misses:Math.max(0,Number(c.misses)||0)
+     };
+    }
+   }));
+   if(!confirm("Esta copia sustituirá el progreso actual de la versión nueva. ¿Continuar?"))return;
+   state.units=newUnits;state.cards=newCards;
+   state.days=[...new Set(d.days.filter(x=>typeof x==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(x)))];
+   state.sessions=Math.max(0,Number(d.sessions)||0);
+   if(d.cfg&&typeof d.cfg==="object"){
+    state.cfg={
+     accent:d.cfg.accent==="en-GB"?"en-GB":"en-US",
+     translation:d.cfg.translation!==false,
+     autoplay:d.cfg.autoplay===true
+    };
+   }
+   save();home();toast("Copia importada.");
+  }catch{toast("La copia no es válida o pertenece a otra versión.")}
+ };
+ data.append(label,file);app.append(data);
+ const legacy=load("en-prog",null);
+ const privacy=document.createElement("details");privacy.className="card";
+ privacy.innerHTML=`<summary>Datos anteriores y privacidad</summary>
+  <p>No se modifican ni borran las claves originales <code>en-cfg</code> y <code>en-prog</code>. La nueva versión utiliza <code>hello-v2</code>.</p>
+  <p>${legacy?"Se detectó progreso de la app anterior. No se convierte automáticamente en unidades superadas porque aquella evaluación podía excluir preguntas saltadas.":"Si usaste la versión anterior en otra dirección web, este navegador no permite leer sus datos desde aquí."}</p>
+  <p>Esta página no incluye analítica, publicidad ni llamadas a una API de IA. El reconocimiento de voz puede utilizar los servicios del navegador, con sus propias condiciones de privacidad.</p>
+  <p>Las grabaciones viven temporalmente en memoria y se liberan al cambiar de pantalla. No las conserves aquí como archivo permanente.</p>`;
+ app.append(privacy);
+ app.append(button("Volver",()=>navigate(back)));
+}
+
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden){
+  stopSpeech();
+  if(recognition){try{recognition.abort()}catch{}recognition=null}
+  stopRecording();
+  document.querySelectorAll("audio").forEach(a=>a.pause());
+ }
+});
+window.addEventListener("pagehide",cleanup);
+home();
+</script>
+</body>
+</html>
