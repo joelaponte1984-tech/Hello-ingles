@@ -135,11 +135,14 @@ footer{background:var(--card);border-top:1px solid var(--line);padding:8px 16px 
   </select>
   <label for="cVoice">Voz</label>
   <select id="cVoice"></select>
+  <label for="cEsVoice">Voz en español (profe)</label>
+  <select id="cEsVoice"></select>
   <label for="cRate">Velocidad de la voz</label>
   <input id="cRate" type="range" min="0.6" max="1.2" step="0.05">
   <label class="check"><input id="cTr" type="checkbox"> Mostrar siempre la traducción</label>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
    <button class="ghost" id="cTest">🔊 Probar voz</button>
+   <button class="ghost" id="cTestEs">🔊 Probar voz española</button>
    <button class="ghost" id="cDel">Borrar clave</button>
   </div>
   <p id="cErr" class="err" role="alert"></p>
@@ -229,7 +232,7 @@ function pickVoice(accent,name){
 }
 function speak(text,opts={}){
  if(!synth||!text)return;
- synth.cancel();
+ hush();
  const accent=opts.accent||cfg.accent;
  const u=new SpeechSynthesisUtterance(text);
  u.lang=accent;
@@ -244,9 +247,12 @@ function speak(text,opts={}){
  }
  synth.speak(u);
 }
+let speakToken=0;
+function hush(){speakToken++;if(window.speechSynthesis)window.speechSynthesis.cancel()}
 function pickEs(){
  if(!synth)return null;
  const vs=synth.getVoices().filter(v=>/^es[-_]/i.test(v.lang));
+ if(cfg.esVoice){const v=vs.find(v=>v.name===cfg.esVoice);if(v)return v}
  const es=vs.filter(v=>/^es[-_]ES/i.test(v.lang));
  const pool=es.length?es:vs;
  const id=v=>v.name+" "+v.voiceURI;
@@ -254,23 +260,29 @@ function pickEs(){
 }
 function speakParts(parts){
  if(!synth)return;
- synth.cancel();
+ hush();
+ const tok=++speakToken;
  const list=parts.filter(p=>p.text);
  if(!list.length)return;
  setState("speaking");
  const base=Number(cfg.rate)||0.95;
- list.forEach((p,i)=>{
+ let i=0;
+ const next=()=>{
+  if(tok!==speakToken)return;
+  if(i>=list.length){if(state==="speaking")setState("idle");return}
+  const p=list[i++];
   const isEs=p.lang.startsWith("es");
   const u=new SpeechSynthesisUtterance(p.text);
   u.lang=p.lang;
   const v=isEs?pickEs():pickVoice(p.lang,cfg.voice);
   if(v){u.voice=v;u.lang=v.lang}
   u.rate=isEs?Math.max(base,0.95):(cfg.level==="A0"?Math.min(base,0.8):base);
-  if(i===list.length-1)u.onend=u.onerror=()=>{if(state==="speaking")setState("idle")};
+  u.onend=u.onerror=()=>{if(tok!==speakToken)return;setTimeout(next,i<list.length?1300:0)};
   synth.speak(u);
- });
+ };
+ next();
 }
-if(synth)synth.addEventListener("voiceschanged",()=>{if(view==="vCfg")fillVoices()});
+if(synth)synth.addEventListener("voiceschanged",()=>{if(view==="vCfg"){fillVoices();fillEsVoices()}});
 
 /* ---------- Estado de la conversación ---------- */
 let state="idle",rec=null,history=[],lastAI="",lastES="",listenLang=null,lastUserEl=null,lastUserText="";
@@ -283,7 +295,7 @@ function setState(s){
  mic.setAttribute("aria-label",s==="listening"?"Terminar de hablar":"Hablar");
  mic.textContent=s==="listening"?"⏹":"🎤";
  setStatus({
-  idle:SR?"Toca 🎤 y habla en inglés":"Escribe tu respuesta en inglés",
+  idle:SR?"Toca 🎤 y habla":"Escribe tu respuesta",
   listening:"Te escucho… toca ⏹ al terminar",
   thinking:"Pensando…",
   speaking:"Hablando… toca 🎤 para responder"
@@ -408,13 +420,14 @@ function note(text,retry){
 async function ask(){
  setState("thinking");
  const wait=addAI("",null,true);
- const messages=[{role:"system",content:sysPrompt()},...history.slice(-24)];
+ const messages=[{role:"system",content:sysPrompt()},...history.slice(-24),
+  {role:"system",content:"Remember: answer ONLY with the JSON object in the exact format described, with every field. Include a suggestion every time."}];
  let res,data={};
  try{
   res=await fetch(API,{
    method:"POST",
    headers:{"Authorization":"Bearer "+cfg.key,"Content-Type":"application/json","X-Title":"Nativo"},
-   body:JSON.stringify({model:cfg.model,messages,temperature:0.8,max_tokens:400})
+   body:JSON.stringify({model:cfg.model,messages,temperature:0.7,max_tokens:500,response_format:{type:"json_object"}})
   });
   data=await res.json().catch(()=>({}));
  }catch{
@@ -454,7 +467,7 @@ function micMsg(code){
 }
 function listen(){
  if(!SR){$("#typing").hidden=false;$("#txt").focus();return}
- if(synth)synth.cancel();
+ if(synth)hush();
  const r=new SR();rec=r;
  r.lang=micLang();r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
  let text="",err="";
@@ -481,7 +494,7 @@ function drawLang(){$("#langBtn").textContent=micLang().startsWith("es")?"🎤 H
 $("#langBtn").onclick=()=>{listenLang=micLang().startsWith("es")?cfg.accent:"es-ES";drawLang()};
 function stopAll(){
  if(rec){try{rec.abort()}catch{}rec=null}
- if(synth)synth.cancel();
+ if(synth)hush();
  if(state!=="thinking")setState("idle");
 }
 
@@ -537,6 +550,13 @@ $("#k1save").onclick=()=>{
 };
 
 /* ---------- Ajustes ---------- */
+function fillEsVoices(){
+ const sel=$("#cEsVoice"),cur=sel.value||cfg.esVoice;
+ sel.replaceChildren(el("option",null,"Automática"));sel.firstChild.value="";
+ const vs=synth?synth.getVoices().filter(v=>/^es[-_]/i.test(v.lang)):[];
+ vs.forEach(v=>{const o=el("option",null,`${v.name} (${v.lang})`);o.value=v.name;sel.append(o)});
+ sel.value=vs.some(v=>v.name===cur)?cur:"";
+}
 function fillVoices(){
  const sel=$("#cVoice"),accent=$("#cAccent").value,current=sel.value||cfg.voice;
  sel.replaceChildren(el("option",null,"Automática (la mejor disponible)"));
@@ -551,10 +571,18 @@ $("#cfgBtn").onclick=()=>{
  prevView=view==="vKey"?"vKey":view;
  $("#cKey").value=cfg.key;$("#cModel").value=cfg.model;$("#cAccent").value=cfg.accent;
  $("#cRate").value=cfg.rate;$("#cTr").checked=cfg.translate;$("#cErr").textContent="";
- $("#cVoice").value="";fillVoices();$("#cVoice").value=cfg.voice;if($("#cVoice").value!==cfg.voice)$("#cVoice").value="";
+ $("#cVoice").value="";fillVoices();$("#cEsVoice").value="";fillEsVoices();$("#cVoice").value=cfg.voice;if($("#cVoice").value!==cfg.voice)$("#cVoice").value="";
  show("vCfg");
 };
 $("#cAccent").onchange=fillVoices;
+$("#cTestEs").onclick=()=>{
+ unlock();hush();
+ const u=new SpeechSynthesisUtterance("Hola, soy tu profesor. Vamos a aprender inglés paso a paso.");
+ u.lang="es-ES";
+ const vs=synth?synth.getVoices():[];const v=vs.find(v=>v.name===$("#cEsVoice").value)||pickEs();
+ if(v){u.voice=v;u.lang=v.lang}
+ if(synth)synth.speak(u);
+};
 $("#cTest").onclick=()=>{
  unlock();
  speak("Hi! This is how I sound. Shall we have a chat?",{accent:$("#cAccent").value,voice:$("#cVoice").value,rate:$("#cRate").value,preview:true});
@@ -563,16 +591,16 @@ $("#cSave").onclick=()=>{
  const k=$("#cKey").value.trim(),m=$("#cModel").value.trim();
  if(!k){$("#cErr").textContent="Necesitas una clave de OpenRouter.";return}
  if(!m){$("#cErr").textContent="Escribe un modelo.";return}
- Object.assign(cfg,{key:k,model:m,accent:$("#cAccent").value,voice:$("#cVoice").value,rate:Number($("#cRate").value)||0.95,translate:$("#cTr").checked});
+ Object.assign(cfg,{key:k,model:m,accent:$("#cAccent").value,voice:$("#cVoice").value,esVoice:$("#cEsVoice").value,rate:Number($("#cRate").value)||0.95,translate:$("#cTr").checked});
  saveCfg();
  document.querySelectorAll(".msg.ai .tr").forEach(t=>{t.hidden=!(cfg.translate||easy())||!t.textContent});
- if(synth)synth.cancel();
+ if(synth)hush();
  drawStart();
  show(prevView==="vKey"?"vStart":prevView);
  if(view==="vChat")setState("idle");
 };
 $("#cBack").onclick=()=>{
- if(synth)synth.cancel();
+ if(synth)hush();
  show(cfg.key?(prevView==="vKey"?"vStart":prevView):"vKey");
  if(view==="vChat")setState("idle");
 };
