@@ -138,7 +138,7 @@ footer{background:var(--card);border-top:1px solid var(--line);padding:8px 16px 
   <label for="cEsVoice">Voz en español (profe)</label>
   <select id="cEsVoice"></select>
   <label for="cRate">Velocidad de la voz</label>
-  <input id="cRate" type="range" min="0.6" max="1.2" step="0.05">
+  <input id="cRate" type="range" min="0.5" max="1.2" step="0.05">
   <label class="check"><input id="cTr" type="checkbox"> Mostrar siempre la traducción</label>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
    <button class="ghost" id="cTest">🔊 Probar voz</button>
@@ -276,7 +276,7 @@ function speakParts(parts){
   u.lang=p.lang;
   const v=isEs?pickEs():pickVoice(p.lang,cfg.voice);
   if(v){u.voice=v;u.lang=v.lang}
-  u.rate=isEs?Math.max(base,0.95):(cfg.level==="A0"?Math.min(base,0.8):base);
+  u.rate=isEs?base:(cfg.level==="A0"?Math.min(base,0.8):base);
   u.onend=u.onerror=()=>{if(tok!==speakToken)return;setTimeout(next,i<list.length?1300:0)};
   synth.speak(u);
  };
