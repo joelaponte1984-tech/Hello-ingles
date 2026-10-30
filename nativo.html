@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d1526">
+<title>Nativo · Conversa en inglés</title>
+<style>
+:root{
+ --bg:#f4f6fb;--card:#fff;--ink:#16223a;--muted:#5f6c82;--line:#dbe1ec;
+ --brand:#3b5bdb;--brandInk:#fff;--ai:#eef1ff;--me:#e3f6ec;--fix:#fff6dc;--fixInk:#5e4500;--bad:#b42335;
+ font:17px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light
+}
+@media(prefers-color-scheme:dark){:root{
+ --bg:#0d1526;--card:#15213a;--ink:#edf2fb;--muted:#a9b6cc;--line:#2a3a57;
+ --brand:#8fa6ff;--brandInk:#0d1526;--ai:#1f2d4f;--me:#163b2e;--fix:#3d3214;--fixInk:#ffe2a0;--bad:#ff9aa8;color-scheme:dark
+}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:disabled{opacity:.45}
+:focus-visible{outline:3px solid #e8a930;outline-offset:2px}
+[hidden]{display:none!important}
+a{color:var(--brand)}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--card)}
+.brand{font-weight:900;font-size:1.35rem;letter-spacing:-.5px}
+.brand span{color:var(--brand)}
+.hbtn{background:none;border:1px solid var(--line);border-radius:12px;padding:8px 12px;min-height:42px;font-weight:700}
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.wrap{max-width:720px;margin:auto;padding:18px 16px 28px}
+h1{font-size:1.9rem;line-height:1.1;margin:6px 0 10px;letter-spacing:-.8px}
+h2{font-size:1.15rem;margin:22px 0 10px}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opt{text-align:left;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px;min-height:100px}
+.opt .i{font-size:1.5rem}
+.opt b{display:block;margin:4px 0 2px}
+.opt small{color:var(--muted);display:block;line-height:1.3}
+.opt[aria-pressed="true"],.seg button[aria-pressed="true"]{border-color:var(--brand);background:var(--ai)}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg button{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:6px 2px;min-height:56px;font-weight:700;font-size:.82rem;line-height:1.2}
+.btn{display:block;width:100%;border:0;border-radius:14px;background:var(--brand);color:var(--brandInk);font-weight:800;padding:15px;min-height:54px;margin-top:20px}
+.ghost{background:none;border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-height:44px;font-weight:700}
+label{display:block;font-weight:700;margin:16px 0 6px}
+input,select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:48px}
+input[type=range]{padding:0;min-height:36px}
+.check{display:flex;gap:10px;align-items:center;font-weight:400}
+.check input{width:22px;min-height:22px}
+.err{color:var(--bad);font-weight:700}
+.msg{max-width:88%;margin:10px 0;padding:12px 14px;border-radius:18px;background:var(--ai)}
+.msg.ai{border-bottom-left-radius:6px}
+.msg.me{margin-left:auto;background:var(--me);border-bottom-right-radius:6px}
+.msg.note{max-width:100%;background:var(--card);border:1px solid var(--line)}
+.who{font-size:.72rem;font-weight:800;color:var(--muted);letter-spacing:.3px}
+.txt{font-size:1.1rem;margin-top:2px}
+.tr{color:var(--muted);font-size:.92rem;margin-top:6px}
+.acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.acts button{background:none;border:1px solid var(--line);border-radius:10px;padding:4px 10px;min-height:36px;font-size:.85rem;font-weight:700}
+.fix{margin-top:8px;background:var(--fix);color:var(--fixInk);border-radius:12px;padding:10px 12px;font-size:.95rem}
+.fix b{display:block;font-size:.8rem}
+.fix .acts button{border-color:currentColor}
+.live{opacity:.7;font-style:italic}
+.dots::after{content:"";animation:d 1.2s steps(4) infinite}
+@keyframes d{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+footer{background:var(--card);border-top:1px solid var(--line);padding:8px 16px calc(12px + env(safe-area-inset-bottom))}
+.bar{max-width:720px;margin:auto}
+#status{text-align:center;font-size:.9rem;color:var(--muted);min-height:1.4em;margin-bottom:8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#mic{width:80px;height:80px;border-radius:50%;border:0;background:var(--brand);color:var(--brandInk);font-size:2rem;flex:none}
+#mic.on{background:#d6334a;color:#fff;animation:p 1.2s infinite}
+@keyframes p{0%,100%{box-shadow:0 0 0 0 #d6334a66}50%{box-shadow:0 0 0 14px #d6334a00}}
+.side{width:90px;min-height:48px;background:none;border:1px solid var(--line);border-radius:12px;font-weight:700;font-size:.85rem}
+.typing{display:flex;gap:8px;margin-top:10px}
+.typing input{flex:1}
+.typing button{border:0;border-radius:12px;background:var(--brand);color:var(--brandInk);font-weight:800;padding:0 16px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand">nativo<span>.</span></div>
+ <div style="display:flex;gap:8px">
+  <button class="hbtn" id="newBtn" hidden>Nueva charla</button>
+  <button class="hbtn" id="cfgBtn" aria-label="Ajustes">⚙️</button>
+ </div>
+</header>
+
+<main id="main">
+ <section id="vKey" hidden><div class="wrap">
+  <h1>Conecta tu IA</h1>
+  <p>Pega tu clave de OpenRouter. Se guarda solo en este móvil.</p>
+  <label for="k1">Clave de OpenRouter</label>
+  <input id="k1" type="password" placeholder="sk-or-..." autocomplete="off" autocapitalize="off" spellcheck="false">
+  <p class="small muted" style="margin-top:8px">La creas en <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>. Tu cuenta necesita algo de saldo.</p>
+  <p id="k1err" class="err" role="alert"></p>
+  <button class="btn" id="k1save">Guardar y continuar</button>
+ </div></section>
+
+ <section id="vStart" hidden><div class="wrap">
+  <h1>¿De qué hablamos hoy?</h1>
+  <p class="muted">Habla como con una persona. Te responde en voz alta y te corrige con suavidad.</p>
+  <h2>Situación</h2>
+  <div class="grid" id="scenes"></div>
+  <h2>Tu nivel</h2>
+  <div class="seg" id="levels"></div>
+  <button class="btn" id="go">Empezar a hablar</button>
+  <p class="small muted" style="margin-top:14px">Para una voz mucho más natural, descarga una voz inglesa «Mejorada» o «Premium» en Ajustes del iPhone → Accesibilidad → Contenido leído → Voces → Inglés. Después elígela en ⚙️.</p>
+ </div></section>
+
+ <section id="vChat" hidden><div class="wrap" id="log"></div></section>
+
+ <section id="vCfg" hidden><div class="wrap">
+  <h1>Ajustes</h1>
+  <label for="cKey">Clave de OpenRouter</label>
+  <input id="cKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <label for="cModel">Modelo</label>
+  <input id="cModel" list="models" autocapitalize="off" autocomplete="off" spellcheck="false">
+  <datalist id="models">
+   <option value="openai/gpt-4o-mini">
+   <option value="google/gemini-2.5-flash">
+   <option value="openai/gpt-4.1-mini">
+  </datalist>
+  <p class="small muted" style="margin-top:6px">Si da error, copia un nombre exacto desde openrouter.ai/models. Los modelos rápidos responden con más agilidad.</p>
+  <label for="cAccent">Acento</label>
+  <select id="cAccent">
+   <option value="en-US">Estadounidense (Jake)</option>
+   <option value="en-GB">Británico (Emma)</option>
+  </select>
+  <label for="cVoice">Voz</label>
+  <select id="cVoice"></select>
+  <label for="cRate">Velocidad de la voz</label>
+  <input id="cRate" type="range" min="0.6" max="1.2" step="0.05">
+  <label class="check"><input id="cTr" type="checkbox"> Mostrar siempre la traducción</label>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+   <button class="ghost" id="cTest">🔊 Probar voz</button>
+   <button class="ghost" id="cDel">Borrar clave</button>
+  </div>
+  <p id="cErr" class="err" role="alert"></p>
+  <button class="btn" id="cSave">Guardar</button>
+  <button class="ghost" id="cBack" style="width:100%;margin-top:10px">Volver</button>
+ </div></section>
+</main>
+
+<footer id="foot" hidden>
+ <div class="bar">
+  <div id="status" role="status"></div>
+  <div class="row">
+   <button class="side" id="kbBtn">⌨️ Escribir</button>
+   <button id="mic" aria-label="Hablar">🎤</button>
+   <button class="side" id="repBtn">🔁 Repetir</button>
+  </div>
+  <div class="typing" id="typing" hidden>
+   <input id="txt" placeholder="Escribe en inglés…" autocapitalize="off" autocomplete="off" spellcheck="false" lang="en" aria-label="Tu mensaje en inglés">
+   <button id="sendTxt">Enviar</button>
+  </div>
+ </div>
+</footer>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const synth=window.speechSynthesis||null;
+const API="https://openrouter.ai/api/v1/chat/completions";
+
+const SCENES=[
+ {id:"chat",icon:"☕",name:"Charla libre",desc:"Tu día, gustos, familia y planes",
+  en:"a relaxed, friendly chat about everyday life: the learner's day, family, hobbies, food, plans and opinions. You are a new friend."},
+ {id:"job",icon:"💼",name:"Entrevista de trabajo",desc:"Puesto técnico o de mantenimiento",
+  en:"a job interview. You are a friendly hiring manager at an industrial company interviewing the learner for a maintenance or workshop supervisor role. Ask one typical interview question at a time and react naturally to the answers."},
+ {id:"work",icon:"🔧",name:"En el trabajo",desc:"Compañeros, averías, turnos y tareas",
+  en:"a conversation with a coworker at a workshop. Talk about tasks, machines, breakdowns, schedules and safety in everyday English."},
+ {id:"doctor",icon:"🩺",name:"En el médico",desc:"Explicar síntomas y entender consejos",
+  en:"a visit to a family doctor. You are the doctor: ask what is wrong, ask simple follow-up questions and give everyday, non-alarming advice."},
+ {id:"travel",icon:"✈️",name:"De viaje",desc:"Aeropuerto, hotel y direcciones",
+  en:"a trip abroad. Play the people the learner meets: airport staff, hotel receptionist, a local giving directions. Move naturally between situations."},
+ {id:"shop",icon:"🛒",name:"Compras y restaurante",desc:"Pedir, preguntar precios y pagar",
+  en:"shopping and eating out. Play a shop assistant or a waiter. Let the learner order, ask about prices and pay."}
+];
+const LEVELS=[
+ ["A1","Inicial","Use very short, very simple sentences (max 12 words each) and only very common words."],
+ ["A2","Básico","Use short, simple sentences and common vocabulary. Avoid idioms."],
+ ["B1","Intermedio","Use natural everyday English with some common phrasal verbs. Keep sentences clear."],
+ ["B2","Avanzado","Speak like a normal native speaker, with natural idioms and phrasal verbs."]
+];
+
+/* ---------- Ajustes ---------- */
+function loadCfg(){try{return JSON.parse(localStorage.getItem("nativo-cfg"))||{}}catch{return {}}}
+const cfg=Object.assign({key:"",model:"openai/gpt-4o-mini",level:"A2",scene:"chat",accent:"en-US",voice:"",rate:0.95,translate:false},loadCfg());
+function saveCfg(){try{localStorage.setItem("nativo-cfg",JSON.stringify(cfg))}catch{}}
+
+/* ---------- Vistas ---------- */
+let view="",prevView="vStart";
+function show(v){
+ ["vKey","vStart","vChat","vCfg"].forEach(id=>$("#"+id).hidden=id!==v);
+ $("#foot").hidden=v!=="vChat";
+ $("#newBtn").hidden=v!=="vChat";
+ view=v;
+ if(v!=="vChat")$("#main").scrollTop=0;
+}
+function el(tag,cls,text){const d=document.createElement(tag);if(cls)d.className=cls;if(text!=null)d.textContent=text;return d}
+function scrollDown(){requestAnimationFrame(()=>{const m=$("#main");m.scrollTop=m.scrollHeight})}
+
+/* ---------- Voz (salida) ---------- */
+let unlocked=false;
+function unlock(){
+ if(!synth||unlocked)return;
+ unlocked=true;
+ const u=new SpeechSynthesisUtterance(" ");u.volume=0;synth.speak(u);
+}
+function enVoices(){return synth?synth.getVoices().filter(v=>/^en[-_]/i.test(v.lang)):[]}
+function pickVoice(accent,name){
+ const all=enVoices();
+ if(name){const v=all.find(v=>v.name===name);if(v)return v}
+ const acc=all.filter(v=>v.lang.replace("_","-")===accent);
+ const pool=acc.length?acc:all;
+ const id=v=>v.name+" "+v.voiceURI;
+ return pool.find(v=>/premium/i.test(id(v)))||pool.find(v=>/enhanced|mejorad/i.test(id(v)))||
+  pool.find(v=>/siri/i.test(id(v)))||pool.find(v=>/google/i.test(id(v)))||pool[0]||null;
+}
+function speak(text,opts={}){
+ if(!synth||!text)return;
+ synth.cancel();
+ const accent=opts.accent||cfg.accent;
+ const u=new SpeechSynthesisUtterance(text);
+ u.lang=accent;
+ const v=pickVoice(accent,opts.voice!==undefined?opts.voice:cfg.voice);
+ if(v){u.voice=v;u.lang=v.lang}
+ u.rate=Number(opts.rate||cfg.rate)||0.95;
+ if(!opts.preview){
+  u.onend=u.onerror=()=>{if(state==="speaking")setState("idle")};
+  setState("speaking");
+ }
+ synth.speak(u);
+}
+if(synth)synth.addEventListener("voiceschanged",()=>{if(view==="vCfg")fillVoices()});
+
+/* ---------- Estado de la conversación ---------- */
+let state="idle",rec=null,history=[],lastAI="",lastUserEl=null,lastUserText="";
+function setStatus(t){$("#status").textContent=t}
+function setState(s){
+ state=s;
+ const mic=$("#mic");
+ mic.classList.toggle("on",s==="listening");
+ mic.disabled=s==="thinking";
+ mic.setAttribute("aria-label",s==="listening"?"Terminar de hablar":"Hablar");
+ mic.textContent=s==="listening"?"⏹":"🎤";
+ setStatus({
+  idle:SR?"Toca 🎤 y habla en inglés":"Escribe tu respuesta en inglés",
+  listening:"Te escucho… toca ⏹ al terminar",
+  thinking:"Pensando…",
+  speaking:"Hablando… toca 🎤 para responder"
+ }[s]);
+}
+const partnerName=()=>cfg.accent==="en-GB"?"EMMA":"JAKE";
+function sysPrompt(){
+ const scene=SCENES.find(s=>s.id===cfg.scene)||SCENES[0];
+ const lv=LEVELS.find(l=>l[0]===cfg.level)||LEVELS[1];
+ const who=cfg.accent==="en-GB"?"Emma, a friendly native English speaker from London":"Jake, a friendly native English speaker from New York";
+ return `You are ${who}. You are having a SPOKEN conversation with an English learner whose native language is Spanish.
+Scenario: ${scene.en}
+Level ${lv[0]}: ${lv[2]}
+Rules:
+- Sound like a real person talking, not a teacher or a chatbot. Use contractions and natural reactions.
+- Keep each reply short: 1 to 3 sentences, and usually end with ONE question to keep the conversation going.
+- No lists, emojis, markdown or stage directions. Your reply will be read aloud.
+- The learner's messages come from speech recognition: ignore missing punctuation or capitals and obvious transcription mistakes. Never correct those.
+- If the learner writes in Spanish or seems lost, help briefly and continue in simpler English.
+- Corrections: if the learner's LAST message has a real grammar or vocabulary mistake, or sounds clearly unnatural, put the natural native version of their whole sentence in "correction" and a very short explanation IN SPANISH (max 15 words) in "explanation". Otherwise leave both empty. Never mention the correction inside "reply".
+- "translation": your reply translated into natural Spanish from Spain.
+Respond ONLY with a valid JSON object, nothing else:
+{"reply":"...","translation":"...","correction":"...","explanation":"..."}`;
+}
+function parse(raw){
+ const t=String(raw||"").replace(/```json|```/g,"").trim();
+ const a=t.indexOf("{"),b=t.lastIndexOf("}");
+ if(a>=0&&b>a){
+  try{
+   const o=JSON.parse(t.slice(a,b+1));
+   return {reply:String(o.reply||"").trim(),translation:String(o.translation||"").trim(),
+    correction:String(o.correction||"").trim(),explanation:String(o.explanation||"").trim()};
+  }catch{}
+ }
+ return {reply:t,translation:"",correction:"",explanation:""};
+}
+const norm=s=>String(s).toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9' ]/g," ").replace(/\s+/g," ").trim();
+function apiError(status,data){
+ const m=data&&data.error&&data.error.message?` (${data.error.message})`:"";
+ if(status===401)return "La clave no es válida. Revísala en ⚙️ Ajustes.";
+ if(status===402)return "Tu cuenta de OpenRouter no tiene saldo suficiente. Recárgala en openrouter.ai.";
+ if(status===429)return "Límite de peticiones alcanzado. Espera unos segundos y reintenta.";
+ if(status===400||status===404)return "El modelo no está disponible. Cambia el modelo en ⚙️ Ajustes."+m;
+ return `Error de OpenRouter (${status}).`+m;
+}
+
+/* ---------- Mensajes en pantalla ---------- */
+function addAI(text,translation,thinking){
+ const d=el("div","msg ai");
+ d.append(el("div","who",partnerName()));
+ const t=el("div","txt"+(thinking?" dots":""),thinking?"Pensando":text);
+ t.lang="en";d.append(t);
+ if(!thinking){
+  const tr=el("div","tr",translation||"");tr.hidden=!cfg.translate||!translation;
+  d.append(tr);
+  const acts=el("div","acts");
+  const play=el("button",null,"🔊 Escuchar");play.onclick=()=>{unlock();speak(text)};
+  acts.append(play);
+  if(translation){
+   const tb=el("button",null,"🇪🇸 Traducir");tb.onclick=()=>{tr.hidden=!tr.hidden};
+   acts.append(tb);
+  }
+  d.append(acts);
+ }
+ $("#log").append(d);scrollDown();return d;
+}
+function addMe(text){
+ const d=el("div","msg me");
+ d.append(el("div","who","TÚ"));
+ const t=el("div","txt",text);t.lang="en";d.append(t);
+ $("#log").append(d);scrollDown();return d;
+}
+function addFix(d,correction,explanation){
+ const f=el("div","fix");
+ f.append(el("b",null,"✨ MÁS NATURAL"));
+ const c=el("div",null,correction);c.lang="en";c.style.fontWeight="700";f.append(c);
+ if(explanation)f.append(el("div",null,explanation));
+ const acts=el("div","acts");
+ const b=el("button",null,"🔊 Escuchar");b.onclick=()=>{unlock();speak(correction)};
+ acts.append(b);f.append(acts);
+ d.append(f);scrollDown();
+}
+function note(text,retry){
+ const d=el("div","msg note");
+ d.append(el("div","err",text));
+ if(retry){
+  const acts=el("div","acts");
+  const b=el("button",null,"↻ Reintentar");
+  b.onclick=()=>{d.remove();ask()};
+  acts.append(b);d.append(acts);
+ }
+ $("#log").append(d);scrollDown();
+}
+
+/* ---------- IA ---------- */
+async function ask(){
+ setState("thinking");
+ const wait=addAI("",null,true);
+ const messages=[{role:"system",content:sysPrompt()},...history.slice(-24)];
+ let res,data={};
+ try{
+  res=await fetch(API,{
+   method:"POST",
+   headers:{"Authorization":"Bearer "+cfg.key,"Content-Type":"application/json","X-Title":"Nativo"},
+   body:JSON.stringify({model:cfg.model,messages,temperature:0.8,max_tokens:400})
+  });
+  data=await res.json().catch(()=>({}));
+ }catch{
+  wait.remove();setState("idle");
+  note("No hay conexión con OpenRouter. Revisa internet.",true);return;
+ }
+ wait.remove();
+ if(!res.ok){setState("idle");note(apiError(res.status,data),res.status!==401&&res.status!==402);return}
+ const raw=data.choices&&data.choices[0]&&data.choices[0].message?data.choices[0].message.content:"";
+ const o=parse(raw);
+ if(!o.reply){setState("idle");note("La IA no devolvió respuesta. Prueba otra vez o cambia de modelo.",true);return}
+ history.push({role:"assistant",content:o.reply});
+ if(lastUserEl&&o.correction&&norm(o.correction)!==norm(lastUserText))addFix(lastUserEl,o.correction,o.explanation);
+ lastUserEl=null;
+ addAI(o.reply,o.translation);
+ lastAI=o.reply;
+ speak(o.reply);
+}
+function sendUser(text){
+ text=String(text||"").trim();
+ if(!text||state==="thinking")return;
+ lastUserText=text;
+ lastUserEl=addMe(text);
+ history.push({role:"user",content:text});
+ ask();
+}
+
+/* ---------- Micrófono ---------- */
+function micMsg(code){
+ return ({
+  "not-allowed":"Micrófono bloqueado. Permítelo en Ajustes del iPhone → Safari → Micrófono, o en el icono «aA» de la barra.",
+  "service-not-allowed":"El reconocimiento de voz no está permitido. Activa Siri y dictado en Ajustes del iPhone.",
+  "audio-capture":"No se pudo usar el micrófono. Cierra otras apps que lo estén usando.",
+  "network":"El reconocimiento de voz necesita internet.",
+  "no-speech":"No te oí. Toca 🎤 y habla más cerca."
+ })[code]||"No se pudo reconocer la voz. Puedes usar ⌨️ Escribir.";
+}
+function listen(){
+ if(!SR){$("#typing").hidden=false;$("#txt").focus();return}
+ if(synth)synth.cancel();
+ const r=new SR();rec=r;
+ r.lang=cfg.accent;r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+ let text="",err="";
+ const live=el("div","msg me live","…");
+ $("#log").append(live);scrollDown();
+ r.onresult=e=>{
+  text=Array.from(e.results).map(x=>x[0].transcript).join(" ").trim();
+  live.textContent=text||"…";scrollDown();
+ };
+ r.onerror=e=>{err=e.error};
+ r.onend=()=>{
+  if(rec===r)rec=null;
+  live.remove();
+  setState("idle");
+  if(text)sendUser(text);
+  else if(err&&err!=="aborted")note(micMsg(err));
+  else setStatus("No te oí. Toca 🎤 y vuelve a intentarlo.");
+ };
+ try{r.start();setState("listening")}
+ catch{rec=null;live.remove();note("No se pudo abrir el micrófono. Usa ⌨️ Escribir.")}
+}
+function stopAll(){
+ if(rec){try{rec.abort()}catch{}rec=null}
+ if(synth)synth.cancel();
+ if(state!=="thinking")setState("idle");
+}
+
+/* ---------- Pantalla de inicio ---------- */
+function drawStart(){
+ const sc=$("#scenes");sc.replaceChildren();
+ SCENES.forEach(s=>{
+  const b=el("button","opt");
+  b.setAttribute("aria-pressed",String(cfg.scene===s.id));
+  b.append(el("div","i",s.icon),el("b",null,s.name),el("small",null,s.desc));
+  b.onclick=()=>{cfg.scene=s.id;saveCfg();drawStart()};
+  sc.append(b);
+ });
+ const lv=$("#levels");lv.replaceChildren();
+ LEVELS.forEach(l=>{
+  const b=el("button");
+  b.setAttribute("aria-pressed",String(cfg.level===l[0]));
+  b.append(document.createTextNode(l[0]),el("br"),document.createTextNode(l[1]));
+  b.onclick=()=>{cfg.level=l[0];saveCfg();drawStart()};
+  lv.append(b);
+ });
+}
+$("#go").onclick=()=>{
+ unlock();
+ history=[{role:"user",content:"(The learner has just joined. Start the conversation: greet them warmly in character and ask your first question. Leave correction and explanation empty.)"}];
+ lastAI="";lastUserEl=null;
+ $("#log").replaceChildren();
+ $("#typing").hidden=!!SR;
+ show("vChat");
+ ask();
+};
+$("#newBtn").onclick=()=>{stopAll();drawStart();show("vStart")};
+
+/* ---------- Barra de conversación ---------- */
+$("#mic").onclick=()=>{
+ unlock();
+ if(state==="listening"){if(rec)rec.stop();return}
+ if(state==="thinking")return;
+ listen();
+};
+$("#repBtn").onclick=()=>{unlock();if(lastAI&&state!=="thinking")speak(lastAI)};
+$("#kbBtn").onclick=()=>{const t=$("#typing");t.hidden=!t.hidden;if(!t.hidden)$("#txt").focus()};
+function sendTyped(){const i=$("#txt");unlock();sendUser(i.value);i.value=""}
+$("#sendTxt").onclick=sendTyped;
+$("#txt").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendTyped()}});
+
+/* ---------- Clave ---------- */
+$("#k1save").onclick=()=>{
+ const k=$("#k1").value.trim();
+ if(k.length<20||!k.startsWith("sk-")){$("#k1err").textContent="Esa clave no parece válida. Debe empezar por sk-or-…";return}
+ cfg.key=k;saveCfg();$("#k1").value="";$("#k1err").textContent="";
+ drawStart();show("vStart");
+};
+
+/* ---------- Ajustes ---------- */
+function fillVoices(){
+ const sel=$("#cVoice"),accent=$("#cAccent").value,current=sel.value||cfg.voice;
+ sel.replaceChildren(el("option",null,"Automática (la mejor disponible)"));
+ sel.firstChild.value="";
+ const vs=enVoices().sort((a,b)=>(b.lang.replace("_","-")===accent)-(a.lang.replace("_","-")===accent));
+ vs.forEach(v=>{const o=el("option",null,`${v.name} (${v.lang})`);o.value=v.name;sel.append(o)});
+ sel.value=vs.some(v=>v.name===current)?current:"";
+}
+$("#cfgBtn").onclick=()=>{
+ if(view==="vCfg")return;
+ stopAll();
+ prevView=view==="vKey"?"vKey":view;
+ $("#cKey").value=cfg.key;$("#cModel").value=cfg.model;$("#cAccent").value=cfg.accent;
+ $("#cRate").value=cfg.rate;$("#cTr").checked=cfg.translate;$("#cErr").textContent="";
+ $("#cVoice").value="";fillVoices();$("#cVoice").value=cfg.voice;if($("#cVoice").value!==cfg.voice)$("#cVoice").value="";
+ show("vCfg");
+};
+$("#cAccent").onchange=fillVoices;
+$("#cTest").onclick=()=>{
+ unlock();
+ speak("Hi! This is how I sound. Shall we have a chat?",{accent:$("#cAccent").value,voice:$("#cVoice").value,rate:$("#cRate").value,preview:true});
+};
+$("#cSave").onclick=()=>{
+ const k=$("#cKey").value.trim(),m=$("#cModel").value.trim();
+ if(!k){$("#cErr").textContent="Necesitas una clave de OpenRouter.";return}
+ if(!m){$("#cErr").textContent="Escribe un modelo.";return}
+ Object.assign(cfg,{key:k,model:m,accent:$("#cAccent").value,voice:$("#cVoice").value,rate:Number($("#cRate").value)||0.95,translate:$("#cTr").checked});
+ saveCfg();
+ if(synth)synth.cancel();
+ drawStart();
+ show(prevView==="vKey"?"vStart":prevView);
+ if(view==="vChat")setState("idle");
+};
+$("#cBack").onclick=()=>{
+ if(synth)synth.cancel();
+ show(cfg.key?(prevView==="vKey"?"vStart":prevView):"vKey");
+ if(view==="vChat")setState("idle");
+};
+$("#cDel").onclick=()=>{
+ if(!confirm("¿Borrar la clave de este móvil?"))return;
+ cfg.key="";saveCfg();show("vKey");
+};
+
+document.addEventListener("visibilitychange",()=>{if(document.hidden)stopAll()});
+
+/* ---------- Arranque ---------- */
+drawStart();
+setState("idle");
+show(cfg.key?"vStart":"vKey");
+</script>
+</body>
+</html>
