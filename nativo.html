@@ -42,7 +42,7 @@ p{margin:0 0 12px}
 .opt b{display:block;margin:4px 0 2px}
 .opt small{color:var(--muted);display:block;line-height:1.3}
 .opt[aria-pressed="true"],.seg button[aria-pressed="true"]{border-color:var(--brand);background:var(--ai)}
-.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
 .seg button{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:6px 2px;min-height:56px;font-weight:700;font-size:.82rem;line-height:1.2}
 .btn{display:block;width:100%;border:0;border-radius:14px;background:var(--brand);color:var(--brandInk);font-weight:800;padding:15px;min-height:54px;margin-top:20px}
 .ghost{background:none;border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-height:44px;font-weight:700}
@@ -58,6 +58,7 @@ input[type=range]{padding:0;min-height:36px}
 .msg.note{max-width:100%;background:var(--card);border:1px solid var(--line)}
 .who{font-size:.72rem;font-weight:800;color:var(--muted);letter-spacing:.3px}
 .txt{font-size:1.1rem;margin-top:2px}
+.es{font-size:1.02rem;margin:4px 0 8px;padding-bottom:8px;border-bottom:1px solid var(--line)}
 .tr{color:var(--muted);font-size:.92rem;margin-top:6px}
 .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .acts button{background:none;border:1px solid var(--line);border-radius:10px;padding:4px 10px;min-height:36px;font-size:.85rem;font-weight:700}
@@ -115,6 +116,7 @@ footer{background:var(--card);border-top:1px solid var(--line);padding:8px 16px 
  <section id="vChat" hidden><div class="wrap" id="log"></div></section>
 
  <section id="vCfg" hidden><div class="wrap">
+  <button class="ghost" id="cBack2">‹ Volver</button>
   <h1>Ajustes</h1>
   <label for="cKey">Clave de OpenRouter</label>
   <input id="cKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -149,6 +151,7 @@ footer{background:var(--card);border-top:1px solid var(--line);padding:8px 16px 
 <footer id="foot" hidden>
  <div class="bar">
   <div id="status" role="status"></div>
+  <div style="text-align:center;margin-bottom:8px"><button class="ghost" id="langBtn" style="min-height:38px;padding:6px 14px;font-size:.9rem"></button></div>
   <div class="row">
    <button class="side" id="kbBtn">⌨️ Escribir</button>
    <button id="mic" aria-label="Hablar">🎤</button>
@@ -183,6 +186,7 @@ const SCENES=[
   en:"shopping and eating out. Play a shop assistant or a waiter. Let the learner order, ask about prices and pay."}
 ];
 const LEVELS=[
+ ["A0","Cero con profe","The learner is an absolute beginner who knows almost no English words. Use very short sentences of 3 to 7 words, only very basic words and the present simple. Ask very simple questions, often yes/no or with two options (for example: Coffee or tea?). One simple idea at a time."],
  ["A1","Inicial","Use very short, very simple sentences (max 12 words each) and only very common words."],
  ["A2","Básico","Use short, simple sentences and common vocabulary. Avoid idioms."],
  ["B1","Intermedio","Use natural everyday English with some common phrasal verbs. Keep sentences clear."],
@@ -191,7 +195,7 @@ const LEVELS=[
 
 /* ---------- Ajustes ---------- */
 function loadCfg(){try{return JSON.parse(localStorage.getItem("nativo-cfg"))||{}}catch{return {}}}
-const cfg=Object.assign({key:"",model:"openai/gpt-4o-mini",level:"A2",scene:"chat",accent:"en-US",voice:"",rate:0.95,translate:false},loadCfg());
+const cfg=Object.assign({key:"",model:"openai/gpt-4o-mini",level:"A0",scene:"chat",accent:"en-US",voice:"",rate:0.95,translate:false},loadCfg());
 function saveCfg(){try{localStorage.setItem("nativo-cfg",JSON.stringify(cfg))}catch{}}
 
 /* ---------- Vistas ---------- */
@@ -231,17 +235,45 @@ function speak(text,opts={}){
  u.lang=accent;
  const v=pickVoice(accent,opts.voice!==undefined?opts.voice:cfg.voice);
  if(v){u.voice=v;u.lang=v.lang}
- u.rate=Number(opts.rate||cfg.rate)||0.95;
+ let rate=Number(opts.rate||cfg.rate)||0.95;
+ if(!opts.rate&&cfg.level==="A0")rate=Math.min(rate,0.8);
+ u.rate=rate;
  if(!opts.preview){
   u.onend=u.onerror=()=>{if(state==="speaking")setState("idle")};
   setState("speaking");
  }
  synth.speak(u);
 }
+function pickEs(){
+ if(!synth)return null;
+ const vs=synth.getVoices().filter(v=>/^es[-_]/i.test(v.lang));
+ const es=vs.filter(v=>/^es[-_]ES/i.test(v.lang));
+ const pool=es.length?es:vs;
+ const id=v=>v.name+" "+v.voiceURI;
+ return pool.find(v=>/premium/i.test(id(v)))||pool.find(v=>/enhanced|mejorad/i.test(id(v)))||pool.find(v=>/siri/i.test(id(v)))||pool[0]||null;
+}
+function speakParts(parts){
+ if(!synth)return;
+ synth.cancel();
+ const list=parts.filter(p=>p.text);
+ if(!list.length)return;
+ setState("speaking");
+ const base=Number(cfg.rate)||0.95;
+ list.forEach((p,i)=>{
+  const isEs=p.lang.startsWith("es");
+  const u=new SpeechSynthesisUtterance(p.text);
+  u.lang=p.lang;
+  const v=isEs?pickEs():pickVoice(p.lang,cfg.voice);
+  if(v){u.voice=v;u.lang=v.lang}
+  u.rate=isEs?Math.max(base,0.95):(cfg.level==="A0"?Math.min(base,0.8):base);
+  if(i===list.length-1)u.onend=u.onerror=()=>{if(state==="speaking")setState("idle")};
+  synth.speak(u);
+ });
+}
 if(synth)synth.addEventListener("voiceschanged",()=>{if(view==="vCfg")fillVoices()});
 
 /* ---------- Estado de la conversación ---------- */
-let state="idle",rec=null,history=[],lastAI="",lastUserEl=null,lastUserText="";
+let state="idle",rec=null,history=[],lastAI="",lastES="",listenLang=null,lastUserEl=null,lastUserText="";
 function setStatus(t){$("#status").textContent=t}
 function setState(s){
  state=s;
@@ -258,8 +290,21 @@ function setState(s){
  }[s]);
 }
 const partnerName=()=>cfg.accent==="en-GB"?"EMMA":"JAKE";
+function tutorPrompt(scene){
+ return `You are a warm, patient English tutor for an adult Spanish speaker who knows almost no English. The learner may talk to you in Spanish or try English. Topic to build vocabulary around: ${scene.en}
+Each turn, fill these JSON fields:
+- "es": in Spanish from Spain, respond naturally to what the learner said or asked (answer their questions, explain words or grammar simply, encourage them) in 1 to 3 short sentences. Then guide them to English: introduce ONE short, useful English phrase about the topic and tell them to say it or use it.
+- "reply": that English phrase or a very short English question for them to answer (max 8 words, very basic words, present simple). Never put Spanish here.
+- "translation": Spanish translation of "reply".
+- "suggestion": a very simple English answer the learner could say (max 8 words). "suggestion_es": its Spanish translation.
+- "correction" and "explanation": if the learner tried English with a mistake, the correct sentence and a very short Spanish explanation. If they spoke Spanish but clearly wanted to say something in English, give the English version and explanation "Así se dice en inglés". Otherwise leave both empty.
+If the learner says they know nothing, start from the very basics (greetings, "my name is", numbers) like a real teacher: "Vale, empecemos por lo básico. Repite conmigo: Hello." Go step by step: repeat and recycle words already taught, add only one new thing per turn, and celebrate progress. The learner's messages come from speech recognition, so ignore punctuation and obvious transcription errors.
+Respond ONLY with a valid JSON object, nothing else:
+{"es":"...","reply":"...","translation":"...","suggestion":"...","suggestion_es":"...","correction":"...","explanation":"..."}`;
+}
 function sysPrompt(){
  const scene=SCENES.find(s=>s.id===cfg.scene)||SCENES[0];
+ if(cfg.level==="A0")return tutorPrompt(scene);
  const lv=LEVELS.find(l=>l[0]===cfg.level)||LEVELS[1];
  const who=cfg.accent==="en-GB"?"Emma, a friendly native English speaker from London":"Jake, a friendly native English speaker from New York";
  return `You are ${who}. You are having a SPOKEN conversation with an English learner whose native language is Spanish.
@@ -270,11 +315,12 @@ Rules:
 - Keep each reply short: 1 to 3 sentences, and usually end with ONE question to keep the conversation going.
 - No lists, emojis, markdown or stage directions. Your reply will be read aloud.
 - The learner's messages come from speech recognition: ignore missing punctuation or capitals and obvious transcription mistakes. Never correct those.
-- If the learner writes in Spanish or seems lost, help briefly and continue in simpler English.
 - Corrections: if the learner's LAST message has a real grammar or vocabulary mistake, or sounds clearly unnatural, put the natural native version of their whole sentence in "correction" and a very short explanation IN SPANISH (max 15 words) in "explanation". Otherwise leave both empty. Never mention the correction inside "reply".
 - "translation": your reply translated into natural Spanish from Spain.
+- "suggestion": a very simple example answer (max 8 words) the learner could say to reply to you, in English. "suggestion_es": its Spanish translation.
+- TEACHER MODE: if the learner's last message is in Spanish (or they say they don't understand), switch to being their teacher. Fill "es" in Spanish from Spain: answer what they said or asked, explain simply, and guide them step by step (for example: "Vale, empecemos por lo básico. Repite conmigo: ..."). Then "reply" is ONE short English phrase for them to repeat or use (max 8 words). If they speak English again, leave "es" empty and continue the normal conversation in English.
 Respond ONLY with a valid JSON object, nothing else:
-{"reply":"...","translation":"...","correction":"...","explanation":"..."}`;
+{"es":"","reply":"...","translation":"...","correction":"...","explanation":"...","suggestion":"...","suggestion_es":"..."}`;
 }
 function parse(raw){
  const t=String(raw||"").replace(/```json|```/g,"").trim();
@@ -282,11 +328,12 @@ function parse(raw){
  if(a>=0&&b>a){
   try{
    const o=JSON.parse(t.slice(a,b+1));
-   return {reply:String(o.reply||"").trim(),translation:String(o.translation||"").trim(),
-    correction:String(o.correction||"").trim(),explanation:String(o.explanation||"").trim()};
+   return {es:String(o.es||"").trim(),reply:String(o.reply||"").trim(),translation:String(o.translation||"").trim(),
+    correction:String(o.correction||"").trim(),explanation:String(o.explanation||"").trim(),
+    suggestion:String(o.suggestion||"").trim(),suggestion_es:String(o.suggestion_es||"").trim()};
   }catch{}
  }
- return {reply:t,translation:"",correction:"",explanation:""};
+ return {es:"",reply:t,translation:"",correction:"",explanation:"",suggestion:"",suggestion_es:""};
 }
 const norm=s=>String(s).toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9' ]/g," ").replace(/\s+/g," ").trim();
 function apiError(status,data){
@@ -299,22 +346,33 @@ function apiError(status,data){
 }
 
 /* ---------- Mensajes en pantalla ---------- */
-function addAI(text,translation,thinking){
+const easy=()=>cfg.level==="A0"||cfg.level==="A1";
+function addAI(text,translation,thinking,sug,es){
  const d=el("div","msg ai");
- d.append(el("div","who",partnerName()));
+ d.append(el("div","who",es?"PROFE":partnerName()));
+ if(es&&!thinking){const e=el("div","es",es);e.lang="es";d.append(e)}
  const t=el("div","txt"+(thinking?" dots":""),thinking?"Pensando":text);
  t.lang="en";d.append(t);
  if(!thinking){
-  const tr=el("div","tr",translation||"");tr.hidden=!cfg.translate||!translation;
+  const tr=el("div","tr",translation||"");tr.hidden=!(cfg.translate||easy())||!translation;
   d.append(tr);
   const acts=el("div","acts");
-  const play=el("button",null,"🔊 Escuchar");play.onclick=()=>{unlock();speak(text)};
+  const play=el("button",null,"🔊 Escuchar");play.onclick=()=>{unlock();es?speakParts([{text:es,lang:"es-ES"},{text,lang:cfg.accent}]):speak(text)};
   acts.append(play);
   if(translation){
    const tb=el("button",null,"🇪🇸 Traducir");tb.onclick=()=>{tr.hidden=!tr.hidden};
    acts.append(tb);
   }
   d.append(acts);
+  if(sug&&sug.en&&easy()){
+   const s=el("div","fix");
+   s.append(el("b",null,"💬 PUEDES RESPONDER"));
+   const c=el("div",null,sug.en);c.lang="en";c.style.fontWeight="700";s.append(c);
+   if(sug.es)s.append(el("div",null,sug.es));
+   const a=el("div","acts");
+   const b=el("button",null,"🔊 Escuchar");b.onclick=()=>{unlock();speak(sug.en)};
+   a.append(b);s.append(a);d.append(s);
+  }
  }
  $("#log").append(d);scrollDown();return d;
 }
@@ -368,12 +426,12 @@ async function ask(){
  const raw=data.choices&&data.choices[0]&&data.choices[0].message?data.choices[0].message.content:"";
  const o=parse(raw);
  if(!o.reply){setState("idle");note("La IA no devolvió respuesta. Prueba otra vez o cambia de modelo.",true);return}
- history.push({role:"assistant",content:o.reply});
+ history.push({role:"assistant",content:o.es?o.es+"\n"+o.reply:o.reply});
  if(lastUserEl&&o.correction&&norm(o.correction)!==norm(lastUserText))addFix(lastUserEl,o.correction,o.explanation);
  lastUserEl=null;
- addAI(o.reply,o.translation);
- lastAI=o.reply;
- speak(o.reply);
+ addAI(o.reply,o.translation,false,{en:o.suggestion,es:o.suggestion_es},o.es);
+ lastAI=o.reply;lastES=o.es;
+ if(o.es)speakParts([{text:o.es,lang:"es-ES"},{text:o.reply,lang:cfg.accent}]);else speak(o.reply);
 }
 function sendUser(text){
  text=String(text||"").trim();
@@ -398,7 +456,7 @@ function listen(){
  if(!SR){$("#typing").hidden=false;$("#txt").focus();return}
  if(synth)synth.cancel();
  const r=new SR();rec=r;
- r.lang=cfg.accent;r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+ r.lang=micLang();r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
  let text="",err="";
  const live=el("div","msg me live","…");
  $("#log").append(live);scrollDown();
@@ -418,6 +476,9 @@ function listen(){
  try{r.start();setState("listening")}
  catch{rec=null;live.remove();note("No se pudo abrir el micrófono. Usa ⌨️ Escribir.")}
 }
+function micLang(){return listenLang||(cfg.level==="A0"?"es-ES":cfg.accent)}
+function drawLang(){$("#langBtn").textContent=micLang().startsWith("es")?"🎤 Hablo en: Español · cambiar":"🎤 Hablo en: Inglés · cambiar"}
+$("#langBtn").onclick=()=>{listenLang=micLang().startsWith("es")?cfg.accent:"es-ES";drawLang()};
 function stopAll(){
  if(rec){try{rec.abort()}catch{}rec=null}
  if(synth)synth.cancel();
@@ -446,7 +507,7 @@ function drawStart(){
 $("#go").onclick=()=>{
  unlock();
  history=[{role:"user",content:"(The learner has just joined. Start the conversation: greet them warmly in character and ask your first question. Leave correction and explanation empty.)"}];
- lastAI="";lastUserEl=null;
+ lastAI="";lastES="";lastUserEl=null;listenLang=null;drawLang();
  $("#log").replaceChildren();
  $("#typing").hidden=!!SR;
  show("vChat");
@@ -461,7 +522,7 @@ $("#mic").onclick=()=>{
  if(state==="thinking")return;
  listen();
 };
-$("#repBtn").onclick=()=>{unlock();if(lastAI&&state!=="thinking")speak(lastAI)};
+$("#repBtn").onclick=()=>{unlock();if(!lastAI||state==="thinking")return;if(lastES)speakParts([{text:lastES,lang:"es-ES"},{text:lastAI,lang:cfg.accent}]);else speak(lastAI)};
 $("#kbBtn").onclick=()=>{const t=$("#typing");t.hidden=!t.hidden;if(!t.hidden)$("#txt").focus()};
 function sendTyped(){const i=$("#txt");unlock();sendUser(i.value);i.value=""}
 $("#sendTxt").onclick=sendTyped;
@@ -485,7 +546,7 @@ function fillVoices(){
  sel.value=vs.some(v=>v.name===current)?current:"";
 }
 $("#cfgBtn").onclick=()=>{
- if(view==="vCfg")return;
+ if(view==="vCfg"){$("#cBack").click();return}
  stopAll();
  prevView=view==="vKey"?"vKey":view;
  $("#cKey").value=cfg.key;$("#cModel").value=cfg.model;$("#cAccent").value=cfg.accent;
@@ -504,6 +565,7 @@ $("#cSave").onclick=()=>{
  if(!m){$("#cErr").textContent="Escribe un modelo.";return}
  Object.assign(cfg,{key:k,model:m,accent:$("#cAccent").value,voice:$("#cVoice").value,rate:Number($("#cRate").value)||0.95,translate:$("#cTr").checked});
  saveCfg();
+ document.querySelectorAll(".msg.ai .tr").forEach(t=>{t.hidden=!(cfg.translate||easy())||!t.textContent});
  if(synth)synth.cancel();
  drawStart();
  show(prevView==="vKey"?"vStart":prevView);
@@ -514,6 +576,7 @@ $("#cBack").onclick=()=>{
  show(cfg.key?(prevView==="vKey"?"vStart":prevView):"vKey");
  if(view==="vChat")setState("idle");
 };
+$("#cBack2").onclick=()=>$("#cBack").click();
 $("#cDel").onclick=()=>{
  if(!confirm("¿Borrar la clave de este móvil?"))return;
  cfg.key="";saveCfg();show("vKey");
